@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.log
+.local-electron.json
+src/renderer/yorushika-official-mark.svg
+src/renderer/yorushika-official-album.jpeg
+src/renderer/logo-data.js
+
+.runtime/
+
+.runtime/
+
+font-candidates/
+.impeccable/
+.env
+.env.*
+*.partial

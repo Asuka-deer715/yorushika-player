@@ -1,0 +1,23 @@
+{
+  "name": "yorushika-player",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first Yorushika desktop music player",
+  "main": "src/main/main.cjs",
+  "scripts": {
+    "start": "node scripts/build.cjs && node scripts/start.cjs",
+    "verify:electron": "node scripts/start.cjs --check",
+    "check": "node --check scripts/start.cjs && node --check src/main/main.cjs && node --check src/renderer/app.js && node --check src/core/lyrics.js && node --check src/core/playback.js",
+    "test": "node scripts/build.cjs && node --test tests/*.test.js",
+    "build": "node scripts/build.cjs"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "typescript": "6.0.3",
+    "@types/node": "^24.0.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
