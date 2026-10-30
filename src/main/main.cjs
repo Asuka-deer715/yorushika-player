@@ -16,6 +16,8 @@ app.commandLine.appendSwitch('disk-cache-dir', path.join(dataRoot, 'cache'));
 protocol.registerSchemesAsPrivileged([{ scheme: 'local-media', privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true } }]);
 const { CollectionStore } = require('../../dist/main/collection-store.js');
 const { registerCollectionIpc } = require('../../dist/main/collection-ipc.js');
+const { OnlineSourceStore, registerOnlineSourcesIpc } = require('../../dist/main/online-sources-ipc.js');
+let sourceStore;
 let collectionStore;
 let store;
 const entryPath = path.join(__dirname, '..', 'desktop', 'index.html');
@@ -53,6 +55,8 @@ app.whenReady().then(() => {
   store = new LibraryStore(path.join(dataRoot, 'library.sqlite'));
   collectionStore = new CollectionStore(path.join(dataRoot, 'library.sqlite'));
   registerCollectionIpc(collectionStore, entryUrl);
+  sourceStore = new OnlineSourceStore(path.join(dataRoot, 'library.sqlite'));
+  registerOnlineSourcesIpc(sourceStore, collectionStore, entryUrl);
   registerLibraryIpc(new LibraryService(store), entryUrl);
   protocol.handle('local-media', async request => {
     const url = new URL(request.url);
@@ -76,4 +80,4 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('will-quit', () => { collectionStore?.close(); store?.close(); });
+app.on('will-quit', () => { sourceStore?.close(); collectionStore?.close(); store?.close(); });

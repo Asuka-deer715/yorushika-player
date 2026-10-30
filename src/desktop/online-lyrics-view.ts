@@ -1,0 +1,11 @@
+import type { CollectionApi, Lyrics } from '../shared/collection.js';
+export function onlineLyricsForm(api:CollectionApi,id:string,title:string,save:(lyrics:Lyrics)=>void):HTMLElement {
+ const section=document.createElement('details');const summary=document.createElement('summary');summary.textContent='在线查找歌词';section.append(summary);
+ const note=document.createElement('p');note.className='lyric-hint';note.textContent='向 LRCLIB 发送下方歌曲名与歌手，不发送文件路径或音视频。此来源提供原文，不保证中文翻译。选择结果后保存到当前版本；已有原文会被替换。';section.append(note);
+ const form=document.createElement('form');form.className='lyric-controls';const track=document.createElement('input');track.className='search';track.value=title;track.placeholder='歌曲名';track.setAttribute('aria-label','歌曲名');track.required=true;track.maxLength=200;
+ const artist=document.createElement('input');artist.className='search';artist.value='ヨルシカ';artist.setAttribute('aria-label','歌手');artist.maxLength=200;
+ const button=document.createElement('button');button.className='primary';button.textContent='查找';form.append(track,artist,button);section.append(form);
+ const result=document.createElement('div');result.setAttribute('role','status');section.append(result);
+ form.onsubmit=async event=>{event.preventDefault();button.disabled=true;result.textContent='正在查找…';try{const candidates=await api.searchLyrics(track.value,artist.value);if(!section.isConnected)return;result.replaceChildren();if(!candidates.length)result.textContent='没有找到歌词，请修改歌曲名或歌手后重试。';for(const candidate of candidates){const row=document.createElement('div');row.className='online-candidate';const name=document.createElement('p');name.textContent=`${candidate.title} · ${candidate.artist} · ${candidate.album||'未知专辑'} · ${Math.round(candidate.duration)} 秒 · ${candidate.synced?'定时歌词':'纯文本'}`;const use=document.createElement('button');use.type='button';use.className='quiet';use.textContent='使用此歌词';use.onclick=async()=>{result.querySelectorAll('button').forEach(b=>b.disabled=true);try{const lyrics=await api.applyOnlineLyrics(id,candidate.id);if(section.isConnected)save(lyrics);}catch(error){result.textContent=(error as Error).message;}};row.append(name,use);result.append(row);}}catch(error){result.textContent=`查找失败：${(error as Error).message}`;}finally{button.disabled=false;}};
+ return section;
+}

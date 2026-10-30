@@ -41,7 +41,9 @@ npm run package:win
 
 ### 尚未完成
 
-自动在线歌词和翻译查询、作品目录与匹配、专辑排序、MV／现场分类、开场动画、首次引导、混合多语言歌词的自动识别，以及正式安装器与签名发布。目前翻译文本仍需导入；应用不自动生成翻译。
+源码开发版已加入可跳过／重播的启动动画、网易云／QQ 单曲链接收藏、平台歌词获取入口和 B 站 BV／链接嵌入入口。网易云实测返回原文、翻译和罗马音；QQ 歌词请求在开发环境受阻，暂未验证可用。设置中获取歌词只替换平台返回的语言，其他语言保留；应用不自动生成翻译。B 站使用官方外链播放器，示例视频返回不可用，尚未验证实际播放，且不与本地进度条同步。
+
+以上改动尚未包含在 v0.1.2 下载包中。音乐平台音频导入／在线播放、平台内歌曲搜索、歌单批量导入、作品目录与匹配、专辑排序、MV／现场分类、首次引导、混合多语言歌词自动识别及正式安装器仍未完成。
 
 ### 素材
 
@@ -74,7 +76,9 @@ Developers only: install Node.js 24+, then run `npm install`, `npm start`, and `
 
 ### Status and assets
 
-Online lyric/translation lookup, editable release catalogs, matching, album sorting, video categories, intro animation, onboarding and signed installers are unfinished. Translations currently require manual import.
+The source development build now includes a skippable/replayable intro, NetEase/QQ song-link bookmarks, a platform-lyrics action in Settings, and a Bilibili BV/link embed. NetEase returned original, translated and romanized lyrics in a live check. QQ lyric requests were blocked in the development environment. Only languages returned by the provider are replaced. Bilibili uses its official external player; the sample video was unavailable, so actual playback remains unverified and is not synchronized with local transport controls.
+
+These changes are not included in the v0.1.2 download. Platform audio import/streaming, platform song search, playlist URL import, editable release catalogs, matching, album sorting, video categories, onboarding and signed installers remain unfinished.
 
 The application bundle retains the album artwork and Yorushika mark used in the interface, and uses system fonts. Candidate fonts, personal media, lyrics and runtime databases are excluded. Artwork is sourced from the [official Yorushika release page](https://yorushika.com/discography/detail/6/). Rights remain with their respective owners; this is an unofficial project and does not claim official permission. No source-code license has been selected yet; public visibility alone is not a redistribution license.
 

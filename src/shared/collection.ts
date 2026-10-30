@@ -1,8 +1,11 @@
+export interface LyricCandidate { id:number; title:string; artist:string; album:string; duration:number; synced:boolean }
 export type LyricLanguage = 'original' | 'translation' | 'romaji';
 export interface LyricLine { time: number | null; text: string }
 export interface Lyrics { offset: number; tracks: Record<LyricLanguage, LyricLine[]> }
 export interface Playlist { id: string; name: string; mediaIds: string[] }
 export interface CollectionApi {
+ searchLyrics(title:string,artist:string):Promise<LyricCandidate[]>;
+ applyOnlineLyrics(mediaId:string,candidateId:number):Promise<Lyrics>;
  playlists(): Promise<Playlist[]>;
  createPlaylist(name: string): Promise<Playlist[]>;
  addToPlaylist(id: string, mediaIds: string[]): Promise<Playlist[]>;

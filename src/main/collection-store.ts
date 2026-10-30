@@ -22,6 +22,7 @@ export class CollectionStore {
  remove(id:string,mediaIds:string[]){this.db.exec('BEGIN');try{const remove=this.db.prepare('DELETE FROM playlist_entries WHERE playlist_id=? AND media_id=?');mediaIds.forEach(mediaId=>remove.run(id,mediaId));this.db.exec('COMMIT');}catch(error){this.db.exec('ROLLBACK');throw error;}return this.playlists();}
  lyrics(id:string):Lyrics{const result:Lyrics={offset:0,tracks:{original:[],translation:[],romaji:[]}};const offset=this.db.prepare('SELECT offset FROM lyric_offsets WHERE media_id=?').get(id);if(offset)result.offset=offset.offset as number;for(const row of this.db.prepare('SELECT language,lines FROM lyric_tracks WHERE media_id=?').all(id))result.tracks[row.language as LyricLanguage]=JSON.parse(row.lines as string) as LyricLine[];return result;}
  saveLyrics(id:string,language:LyricLanguage,lines:LyricLine[]){this.db.prepare('INSERT INTO lyric_tracks VALUES(?,?,?) ON CONFLICT(media_id,language) DO UPDATE SET lines=excluded.lines').run(id,language,JSON.stringify(lines));return this.lyrics(id);}
+ saveLyricsBundle(id:string,tracks:Lyrics['tracks']){this.db.exec('BEGIN');try{for(const language of ['original','translation','romaji'] as const){if(tracks[language].length)this.saveLyrics(id,language,tracks[language]);}this.db.exec('COMMIT');}catch(error){this.db.exec('ROLLBACK');throw error;}return this.lyrics(id);}
  setOffset(id:string,offset:number){this.db.prepare('INSERT INTO lyric_offsets VALUES(?,?) ON CONFLICT(media_id) DO UPDATE SET offset=excluded.offset').run(id,offset);}
  close(){this.db.close();}
 }

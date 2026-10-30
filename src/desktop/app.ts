@@ -1,3 +1,7 @@
+import { playIntro } from './intro.js';
+import { OnlineSourcesView } from './online-sources-view.js';
+import type { OnlineSourcesApi } from '../shared/online-sources.js';
+import { LyricsDisplay } from './lyrics-display.js';
 import { PlaybackTransition } from './playback-transition.js';
 import { LyricsView } from './lyrics-view.js';
 import { PlaylistsView } from './playlists-view.js';
@@ -5,20 +9,22 @@ import type { CollectionApi } from '../shared/collection.js';
 import { icon } from './icons.js';
 import { Player } from './player.js';
 import type { LibraryApi, MediaRecord, MediaKind } from '../shared/library.js';
-declare global { interface Window { library: LibraryApi; collection: CollectionApi } }
+declare global { interface Window { sources: OnlineSourcesApi; library: LibraryApi; collection: CollectionApi } }
 const element = <T extends HTMLElement = HTMLElement>(id:string) => document.getElementById(id) as T;
 const escape = (value:string) => value.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));
 const player = new Player();
 const playbackTransition = new PlaybackTransition();
 const lyricsView=new LyricsView(window.collection,notify);
+const lyricsDisplay=new LyricsDisplay(window.collection);
 const playlistsView=new PlaylistsView(window.collection,notify,(item,queue)=>{void player.play(item,queue)});
+const sourcesView=new OnlineSourcesView(window.sources,notify,()=>{player.audio.pause();player.video.pause();},()=>player.current?.id);
 let videoLayout='split';
 let records:MediaRecord[]=[];
 let route='home';
 let query='';
 let browseState={route:'home',query:'',scroll:0};
 let noticeTimer:ReturnType<typeof setTimeout>;
-const routes=[['home','home','乐队作品'],['library','music','本地音乐'],['videos','video','MV 与现场'],['playlists','folder','我的歌单'],['imports','import','导入与整理']];
+const routes=[['home','home','乐队作品'],['library','music','本地音乐'],['videos','video','MV 与现场'],['playlists','folder','我的歌单'],['imports','import','导入与整理'],['online','music','在线链接']];
 const time=(value:number)=>Number.isFinite(value)?`${Math.floor(value/60)}:${String(Math.floor(value%60)).padStart(2,'0')}`:'0:00';
 function notify(message:string){element('notice').textContent=message;element('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>element('notice').hidden=true,6500)}
 function open(next:string){
@@ -47,10 +53,11 @@ function render(){
  const page=element('page');
  if(route==='home')page.innerHTML=`<section class="feature"><div><h1>让故事，<br>在旋律里继续。</h1><p>从一张唱片，到一段记忆。<br>在这里，慢慢听夜鹿。</p><button class="primary" data-route="library">打开我的音乐</button></div><figure><img src="../renderer/yorushika-official-album.jpeg" alt="だから僕は音楽を辞めた 专辑封面"><figcaption>だから僕は音楽を辞めた<br>ヨルシカ · 封面展示</figcaption></figure></section><div class="section-heading"><h2>我的收藏</h2><small>${records.filter(item=>item.kind==='audio').length} 首本地音乐</small></div>${records.some(item=>item.kind==='audio')?rows(records.filter(item=>item.kind==='audio').slice(0,6)):empty('audio')}`;
  else if(route==='library'||route==='videos'){const kind=route==='library'?'audio':'mv';const items=records.filter(item=>item.kind===kind&&item.name.toLowerCase().includes(query.toLowerCase()));page.innerHTML=`<div class="section-heading"><h1>${kind==='audio'?'本地音乐':'MV 与现场'}</h1><button class="primary" data-import="${kind}">导入${kind==='audio'?'音乐':'视频'}</button></div><input class="search" id="search" aria-label="搜索已导入文件" placeholder="搜索已导入文件" value="${escape(query)}"><div id="results">${items.length?rows(items):query?'<div class="empty"><p>没有找到匹配的文件，试试其他名称。</p></div>':empty(kind)}</div>`;}
+ else if(route==='online'){page.innerHTML='<div id="online-sources"></div>';void sourcesView.mount(element('online-sources'));}
  else if(route==='imports')page.innerHTML=`<h1>导入与整理</h1><p>建立文件关联，保留你的收藏原貌。</p><div class="actions"><button class="primary" data-import="audio">导入音乐</button><button class="secondary" data-import="mv">导入视频</button><button class="quiet" id="refresh">重新检查文件</button></div>${records.length?rows(records):'<div class="empty"><h3>收藏从第一首开始</h3><p>支持批量选择。同一路径不会重复导入；文件移动后，可以通过“重新关联”找回。</p></div>'}`;
  else if(route==='playlists'){page.innerHTML='<div id="playlists-page"></div>';void playlistsView.mount(element('playlists-page'),records);}
  else if(route==='settings')page.innerHTML=`<h1>设置</h1><p>让聆听更合你的习惯。</p><div class="setting"><span>界面字体<small>切换正文和标题的阅读风格</small></span><select id="font"><option value="sans">思源黑体</option><option value="serif">装甲明朝</option><option value="genryu">源流明体</option><option value="pearl">台湾圆体</option><option value="akazuki">あかずきんポップ</option></select></div><div class="setting"><span>单曲循环<small>重复播放当前音乐或视频</small></span><input type="checkbox" id="repeat" aria-label="单曲循环" ${player.audio.loop?'checked':''}></div><div class="setting"><span>本地收藏<small>导入记录自动保存，源文件保留原位置</small></span><button class="secondary" data-route="imports">管理文件</button></div>`;
- else if(route==='now'){const item=player.current;page.innerHTML=`<div class="section-heading"><h1>正在播放</h1><button class="quiet" id="close-player">返回浏览 · Esc</button></div>${item?`<section class="listening ${item.kind==='mv'&&videoLayout==='background'?'background-video':''}"><div id="visual" class="${item.kind==='audio'?'listening-art':''}">${item.kind==='audio'?'<img src="../renderer/yorushika-official-mark.svg" alt="夜鹿">':''}</div><div><h1>${escape(item.name)}</h1><p>${item.kind==='audio'?'本地音频':'本地视频'}</p><button class="primary" id="page-toggle">播放 / 暂停</button><div id="lyrics-panel"></div></div></section>`:empty('audio')}`;if(item){void lyricsView.mount(element('lyrics-panel'),item.id);if(item.kind==='mv'){element('visual').append(player.video);const layouts=document.createElement('button');layouts.className='quiet';layouts.textContent=videoLayout==='split'?'切换为背景视频':'切换为左右布局';layouts.onclick=()=>{videoLayout=videoLayout==='split'?'background':'split';render()};page.querySelector('.section-heading')!.append(layouts);}}}
+ else if(route==='now'){const item=player.current;page.innerHTML=`<div class="section-heading"><h1>正在播放</h1><button class="icon-button" id="close-player" aria-label="收起播放页，返回浏览" title="返回浏览（Esc）">${icon('down')}</button></div>${item?`<section class="listening ${item.kind==='mv'&&videoLayout==='background'?'background-video':''}"><div id="visual" class="${item.kind==='audio'?'listening-art':''}">${item.kind==='audio'?'<img src="../renderer/yorushika-official-mark.svg" alt="夜鹿">':''}</div><div><h1>${escape(item.name)}</h1><p>${item.kind==='audio'?'本地音频':'本地视频'}</p><div id="lyrics-panel"></div></div></section>`:empty('audio')}`;if(item){void lyricsDisplay.mount(element('lyrics-panel'),item.id);if(item.kind==='mv'){element('visual').append(player.video);const layouts=document.createElement('button');layouts.className='quiet';layouts.textContent=videoLayout==='split'?'切换为背景视频':'切换为左右布局';layouts.onclick=()=>{videoLayout=videoLayout==='split'?'background':'split';render()};page.querySelector('.section-heading')!.append(layouts);}}}
  document.querySelectorAll<HTMLButtonElement>('[data-route]').forEach(button=>button.onclick=()=>open(button.dataset.route!));
  document.querySelectorAll<HTMLButtonElement>('[data-import]').forEach(button=>button.onclick=()=>void importFiles(button.dataset.import as MediaKind));
  bindRows();
@@ -58,8 +65,8 @@ function render(){
  if(search)search.oninput=()=>{query=search.value;const kind=route==='library'?'audio':'mv';const items=records.filter(item=>item.kind===kind&&item.name.toLowerCase().includes(query.toLowerCase()));element('results').innerHTML=items.length?rows(items):'<p>没有找到匹配的文件。</p>';bindRows()};
  if(route==='imports')element('refresh').onclick=()=>void load();
  if(route==='now')element('close-player').onclick=closePlayer;
- if(route==='now'&&player.current)element('page-toggle').onclick=()=>player.toggle();
- if(route==='settings'){const font=element<HTMLSelectElement>('font');font.value=localStorage.getItem('desktop-font')??'sans';font.onchange=()=>{document.body.dataset.font=font.value;localStorage.setItem('desktop-font',font.value)};element<HTMLInputElement>('repeat').onchange=event=>{const repeat=(event.target as HTMLInputElement).checked;player.audio.loop=player.video.loop=repeat;localStorage.setItem('desktop-repeat',String(repeat))};}
+ if(route==='now'){const button=document.createElement('button');button.className='icon-button playback-settings';button.innerHTML=icon('settings');button.title='歌词设置';button.setAttribute('aria-label','歌词设置');button.onclick=()=>{open('settings');document.querySelector('.lyrics-settings')!.scrollIntoView({block:'start'});};page.append(button);}
+ if(route==='settings'){const introSetting=document.createElement('div');introSetting.className='setting';introSetting.innerHTML='<span>启动动画<small>打开眼睛，进入音乐馆</small></span><label><input id="intro-enabled" type="checkbox"> 启动时显示</label><button id="intro-replay" class="quiet">重播</button>';page.append(introSetting);const enabled=introSetting.querySelector<HTMLInputElement>('input')!;enabled.checked=localStorage.getItem('desktop-intro')!=='false';enabled.onchange=()=>localStorage.setItem('desktop-intro',String(enabled.checked));element('intro-replay').onclick=()=>void playIntro(true);const sources=document.createElement('section');sources.className='platform-lyrics-settings';page.append(sources);void sourcesView.mount(sources,true);const section=document.createElement('section');section.className='lyrics-settings';const heading=document.createElement('h2');heading.textContent='歌词与在线来源';section.append(heading);const context=document.createElement('p');context.textContent=player.current?'当前版本：'+player.current.name:'播放一首音乐后，可为该版本查找、导入和校准歌词。';section.append(context);const panel=document.createElement('div');section.append(panel);page.append(section);if(player.current)void lyricsView.mount(panel,player.current.id,player.current.name);const font=element<HTMLSelectElement>('font');font.value=localStorage.getItem('desktop-font')??'sans';font.onchange=()=>{document.body.dataset.font=font.value;localStorage.setItem('desktop-font',font.value)};element<HTMLInputElement>('repeat').onchange=event=>{const repeat=(event.target as HTMLInputElement).checked;player.audio.loop=player.video.loop=repeat;localStorage.setItem('desktop-repeat',String(repeat))};}
 }
 function bindRows(){document.querySelectorAll<HTMLButtonElement>('[data-play]').forEach(button=>button.onclick=()=>{const item=records.find(item=>item.id===button.dataset.play)!;void player.play(item,records.filter(row=>row.kind===item.kind&&!row.missing));if(item.kind==='mv')open('now')});document.querySelectorAll<HTMLButtonElement>('[data-relink]').forEach(button=>button.onclick=async()=>{try{records=await window.library.relink(button.dataset.relink!);render()}catch(error){notify((error as Error).message)}})}
 async function load(){try{records=await window.library.list();render()}catch(error){notify(`无法读取收藏：${(error as Error).message}`)}}
@@ -69,9 +76,12 @@ element('previous').innerHTML=icon('previous');element('next').innerHTML=icon('n
 element('previous').onclick=()=>player.next(-1);element('next').onclick=()=>player.next(1);element('toggle').onclick=()=>player.toggle();element('open-player').onclick=()=>open('now');element('settings').onclick=()=>open('settings');element('import-shortcut').onclick=()=>void importFiles('audio');
 element<HTMLInputElement>('volume').oninput=event=>player.volume(Number((event.target as HTMLInputElement).value)/100);
 element<HTMLInputElement>('seek').oninput=event=>player.seek(Number((event.target as HTMLInputElement).value)/1000);
+for(const media of [player.audio,player.video])media.addEventListener('play',()=>document.querySelector('.online-video')?.replaceChildren());
 player.addEventListener('failure',event=>notify((event as CustomEvent<string>).detail));
 let displayedTrack:string|null=null;
-player.addEventListener('change',()=>{if(displayedTrack!==player.current?.id){displayedTrack=player.current?.id??null;if(route==='now')render();}const media=player.media;lyricsView.update(media.currentTime);element('track-title').textContent=player.current?.name??'选择一首，开始聆听';element('track-description').textContent=player.current?.kind==='mv'?'本地视频':'本地音乐 · Yorushika';element('toggle').innerHTML=icon(media.paused?'play':'pause');element('elapsed').textContent=time(media.currentTime);element('duration').textContent=time(media.duration);element<HTMLInputElement>('seek').value=String(Number.isFinite(media.duration)&&media.duration>0?media.currentTime/media.duration*1000:0)});
+player.addEventListener('change',()=>{if(displayedTrack!==player.current?.id){displayedTrack=player.current?.id??null;if(route==='now'||route==='settings')render();}const media=player.media;lyricsDisplay.update(media.currentTime);element('track-title').textContent=player.current?.name??'选择一首，开始聆听';element('track-description').textContent=player.current?.kind==='mv'?'本地视频':'本地音乐 · Yorushika';element('toggle').innerHTML=icon(media.paused?'play':'pause');element('elapsed').textContent=time(media.currentTime);element('duration').textContent=time(media.duration);element<HTMLInputElement>('seek').value=String(Number.isFinite(media.duration)&&media.duration>0?media.currentTime/media.duration*1000:0)});
 document.body.dataset.font=localStorage.getItem('desktop-font')??'sans';player.audio.loop=player.video.loop=localStorage.getItem('desktop-repeat')==='true';render();void load();
 
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&route==='now'){event.preventDefault();closePlayer();}});
+
+void playIntro();
