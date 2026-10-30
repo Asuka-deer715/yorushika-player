@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const { LibraryStore } = require('../../dist/main/library-store.js');
 const { LibraryService } = require('../../dist/main/library-service.js');
 const { registerLibraryIpc } = require('../../dist/main/library-ipc.js');
-const dataRoot = path.resolve(__dirname, '../../.runtime');
+const dataRoot = process.env.YORUSHIKA_DATA_DIR || (app.isPackaged ? app.getPath('userData') : path.resolve(__dirname, '../../.runtime'));
 for (const name of ['userData', 'sessionData', 'temp', 'logs', 'crashDumps']) {
   const directory = path.join(dataRoot, name);
   fs.mkdirSync(directory, { recursive: true });

@@ -1,8 +1,8 @@
 # Yorushika Player / 夜鹿播放器
 
-面向 Windows 的本地音乐播放器，以 Yorushika（ヨルシカ）的作品与个人收藏为中心。当前为持续开发中的源码版本，没有安装包。
+面向 Windows 的本地音乐播放器，以 Yorushika（ヨルシカ）的作品与个人收藏为中心。当前为持续开发中的预览版，提供包含运行时的 Windows x64 ZIP 应用包。
 
-A local-first Windows music player centered on Yorushika and your personal collection. This is a work-in-progress source release; no installer is provided yet.
+A local-first Windows music player centered on Yorushika and your personal collection. This is a work-in-progress preview with a self-contained Windows x64 ZIP application.
 
 ## 中文
 
@@ -17,36 +17,35 @@ A local-first Windows music player centered on Yorushika and your personal colle
 
 导入只记录原路径，不复制、移动或删除源文件。换电脑需要重新关联媒体。实际格式兼容性取决于 Electron 内置解码能力，文件扩展名可被导入不代表所有编码均可播放。
 
-### 启动
+### 下载与使用
 
-需要 Node.js 24 或更高版本、npm 和 Windows。
+1. 在 [Releases](https://github.com/Asuka-deer715/yorushika-player/releases) 下载 `Yorushika-0.1.2-win-x64.zip`，不要下载 Source code。
+2. 完整解压到你选择的文件夹。
+3. 双击 `Yorushika.exe`，然后导入本地音乐。
+
+不需要 Node.js、npm 或命令行。应用包包含 Electron 运行时；请保留解压出的配套文件，不要只移动 exe。该预览包尚未代码签名。
+
+应用数据默认保存在当前 Windows 用户的 `%APPDATA%/yorushika-player` 下，不要求 G 盘。缓存与日志也使用该用户的数据目录。源媒体始终保留原位置。
+
+### 开发者运行
+
+仅开发源码时需要 Node.js 24+：
 
 ```powershell
 npm install
 npm start
+npm run package:win
 ```
 
-依赖准备好后，可以直接双击项目根目录的 **start.cmd**。它会编译后启动；构建失败时保留窗口显示错误。
-
-本机也可使用未提交的 `.local-electron.json` 复用已有工具链：其中 `electronBinary` 指向 Electron 可执行文件，邻近 `node_modules` 必须包含 Electron、TypeScript 和 `@types/node`。推荐新用户安装项目依赖。
-
-开发时应用数据、SQLite、缓存与临时目录位于项目内 `.runtime/`，编译文件位于 `dist/`，均不提交 Git。请把项目放在有写权限的目录。需要全部下载到 G 盘时，先在当前 PowerShell 设置 npm、Electron 和临时目录：
-
-```powershell
-$env:npm_config_cache = 'G:\DevCache\npm'
-$env:ELECTRON_CACHE = 'G:\DevCache\electron'
-$env:TEMP = $env:TMP = 'G:\DevCache\temp'
-New-Item -ItemType Directory -Force $env:TEMP | Out-Null
-npm install
-```
+使用 npm、Electron 和系统的默认缓存路径，不强制指定盘符。开发运行数据位于 `.runtime/`，打包输出位于 `release/`。本机工具链复用配置 `.local-electron.json` 不提交仓库。`start.cmd` 是开发启动入口，普通用户使用应用包中的 exe。
 
 ### 尚未完成
 
-自动在线歌词和翻译查询、作品目录与匹配、专辑排序、MV／现场分类、开场动画、首次引导、混合多语言歌词的自动识别，以及正式打包发布。目前翻译文本仍需导入；应用不自动生成翻译。
+自动在线歌词和翻译查询、作品目录与匹配、专辑排序、MV／现场分类、开场动画、首次引导、混合多语言歌词的自动识别，以及正式安装器与签名发布。目前翻译文本仍需导入；应用不自动生成翻译。
 
 ### 素材
 
-本仓库不包含用户音视频、歌词、运行数据库、官方封面／标志或字体候选。界面中的本地素材引用用于开发预览；新克隆缺少图片时可能显示空白图位，字体使用系统后备。完整素材缺失体验仍待完善。
+应用包保留当前展示的专辑封面与夜鹿标志，使用系统字体。图片来自 [Yorushika 官方作品页面](https://yorushika.com/discography/detail/6/)，权利归原权利人所有；本项目非官方项目，不宣称已获得官方授权。用户媒体、歌词、运行数据库和字体候选不随包发布。
 
 官方图像本机路径为 `src/renderer/yorushika-official-album.jpeg` 和 `src/renderer/yorushika-official-mark.svg`。只有获得使用权限后才应自行放入。公开仓库不代表获得音乐、歌词、商标或字体的使用授权。项目代码的开源许可证尚未选定；public 可见性不等于许可任意再分发。
 
@@ -65,17 +64,19 @@ UI 信息组织参考 [Twilight Echo](https://github.com/Px-asen/Twilight_Echo)�
 
 Imports reference existing files without copying, moving or deleting them. Decoder support depends on Electron; an accepted file extension does not guarantee codec compatibility.
 
-### Run
+### Download and run
 
-Install Node.js 24+ and npm on Windows, then run `npm install` followed by `npm start`. Once dependencies are available, double-click **start.cmd** in the repository root. The launcher builds before opening the app.
+Download `Yorushika-0.1.2-win-x64.zip` from [Releases](https://github.com/Asuka-deer715/yorushika-player/releases), extract the entire archive, and double-click **Yorushika.exe**. No Node.js, npm or terminal is required. Keep the accompanying runtime files together. This preview is not code-signed.
 
-Runtime data is stored under `.runtime/`; compiled output is under `dist/`. Both are excluded from Git. Use a writable project directory. An optional, untracked `.local-electron.json` can reuse an existing Electron/TypeScript toolchain on a development machine.
+Application data defaults to the current Windows user's `%APPDATA%/yorushika-player` directory. No particular drive letter is required. Media stays in its original location.
+
+Developers only: install Node.js 24+, then run `npm install`, `npm start`, and `npm run package:win` as needed. Standard system/package-manager cache locations are used. Development data lives in `.runtime/`; packages are generated under `release/`.
 
 ### Status and assets
 
-Online lyric/translation lookup, editable release catalogs, matching, album sorting, video categories, intro animation, onboarding and distribution packages are unfinished. Translations currently require manual import.
+Online lyric/translation lookup, editable release catalogs, matching, album sorting, video categories, intro animation, onboarding and signed installers are unfinished. Translations currently require manual import.
 
-Official images, candidate fonts, personal media, lyrics and runtime databases are excluded. Local image references may appear empty in a fresh clone; fonts fall back to system fonts. Only add artwork and fonts you have permission to use. No source-code license has been selected yet; public visibility alone is not a redistribution license.
+The application bundle retains the album artwork and Yorushika mark used in the interface, and uses system fonts. Candidate fonts, personal media, lyrics and runtime databases are excluded. Artwork is sourced from the [official Yorushika release page](https://yorushika.com/discography/detail/6/). Rights remain with their respective owners; this is an unofficial project and does not claim official permission. No source-code license has been selected yet; public visibility alone is not a redistribution license.
 
 The UI organization takes inspiration from [Twilight Echo](https://github.com/Px-asen/Twilight_Echo), without copying its source code.
 
