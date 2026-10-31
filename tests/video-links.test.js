@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
-const {LibraryStore}=require('../dist/main/library-store.js');
-const {CollectionStore}=require('../dist/main/collection-store.js');
+const {LibraryStore}=require('../dist/main/library/library-store.js');
+const {CollectionStore}=require('../dist/main/collection/collection-store.js');
 test('local video links persist, deduplicate and validate types',()=>{
  const root=process.cwd().replaceAll('\\','/')+'/.runtime/video-link-test-'+process.pid+'.sqlite';
  const library=new LibraryStore(root);let collection=new CollectionStore(root);

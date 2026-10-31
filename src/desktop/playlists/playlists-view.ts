@@ -1,0 +1,43 @@
+import {formatText} from '../localization/i18n.js';
+import {t} from '../localization/i18n.js';
+import {choosePlaylistSongs} from './playlist-add-dialog.js';
+import {playlistSongMenu} from './playlist-song-menu.js';
+import {enhanceSelect} from '../components/soft-select.js';
+import {renameDialog} from '../components/rename-dialog.js';
+import {choosePlaylistCover} from './playlist-cover-editor.js';
+import type { CollectionApi, Playlist } from '../../shared/collection.js';
+import type { MediaRecord } from '../../shared/library.js';
+export class PlaylistsView {
+ private playlists:Playlist[]=[];
+ private active='';
+ private editing=false;
+ constructor(private api:CollectionApi,private report:(message:string)=>void,private play:(item:MediaRecord,queue:MediaRecord[])=>void){}
+ async mount(container:HTMLElement,records:MediaRecord[]){try{this.playlists=await this.api.playlists();if(container.isConnected)this.render(container,records);}catch(error){this.report((error as Error).message)}}
+ private render(container:HTMLElement,records:MediaRecord[]){
+  container.replaceChildren();const current=this.playlists.find(p=>p.id===this.active);const heading=document.createElement('h1');heading.textContent=current?.name??'我的歌单';container.append(heading);
+  if(!current){const form=document.createElement('form');form.className='actions';const input=document.createElement('input');input.className='search';input.placeholder=t('新歌单名称');input.setAttribute('aria-label',t('新歌单名称'));input.required=true;input.maxLength=80;const create=document.createElement('button');create.textContent=t('创建歌单');create.className='primary';form.append(input,create);form.onsubmit=async event=>{event.preventDefault();try{this.playlists=await this.api.createPlaylist(input.value);this.active=this.playlists.at(-1)!.id;this.render(container,records)}catch(error){this.report((error as Error).message)}};container.append(form);}
+  if(!this.playlists.length){const hint=document.createElement('p');hint.textContent=t('创建歌单后，勾选多首音乐一次加入。同一首音乐可以放进多个歌单。');container.append(hint);return;}
+  if(!this.active||!this.playlists.some(p=>p.id===this.active)){
+   this.active='';const grid=document.createElement('div');grid.className='catalog-grid';
+   for(const playlist of this.playlists){const card=document.createElement('button');card.className='catalog-card';const art=document.createElement('div');art.className='catalog-art';const logo=document.createElement('img');logo.src='../renderer/yorushika-official-mark.svg';logo.alt='';art.append(logo);const overlay=document.createElement('span');overlay.className='catalog-hover';overlay.textContent=t('查看歌单');art.append(overlay);const title=document.createElement('strong');title.textContent=playlist.name;const count=document.createElement('small');count.textContent=formatText("{1} 首 · {2}",playlist.mediaIds.length,playlist.createdAt?new Date(playlist.createdAt).toLocaleDateString():t('创建时间未知'));card.append(art,title,count);card.onclick=()=>{this.active=playlist.id;this.render(container,records)};grid.append(card);if(playlist.cover){logo.src=playlist.cover;logo.className='playlist-cover';}const first=playlist.mediaIds[0];if(first&&!playlist.cover)void this.api.cover(first).then(url=>{if(url&&card.isConnected){logo.src=url;logo.className='playlist-cover';}}).catch(()=>{});}
+   container.append(grid);return;
+  }
+  const back=document.createElement('button');back.className='quiet';back.textContent=t('返回歌单列表');back.onclick=()=>{this.editing=false;this.active='';this.render(container,records)};container.append(back);
+  const playlist=this.playlists.find(p=>p.id===this.active)!;const meta=document.createElement('p');meta.textContent=playlist.createdAt?t('创建于 ')+new Date(playlist.createdAt).toLocaleString():t('创建时间未知');container.append(meta);const cover=document.createElement('img');cover.className='playlist-detail-cover';cover.src=playlist.cover||'../renderer/yorushika-official-mark.svg';cover.alt=playlist.name+' 封面';container.append(cover);const queue=playlist.mediaIds.map(id=>records.find(record=>record.id===id)).filter((record):record is MediaRecord=>!!record&&!record.missing);
+  const actions=document.createElement('div');actions.className='actions';const play=document.createElement('button');play.className='primary';play.textContent=t('顺序播放');play.disabled=!queue.length;play.onclick=()=>this.play(queue[0],queue);actions.append(play);
+  const rename=document.createElement('button');rename.className='quiet';rename.textContent=t('重命名歌单');rename.onclick=()=>renameDialog(t('重命名歌单'),playlist.name,async name=>{this.playlists=await this.api.renamePlaylist(playlist.id,name);this.render(container,records);});
+  const editCover=document.createElement('button');editCover.className='quiet';editCover.textContent=t('更换封面');editCover.onclick=()=>choosePlaylistCover(async image=>{this.playlists=await this.api.setPlaylistCover(playlist.id,image);this.render(container,records);});
+  const add=document.createElement('button');add.className='quiet';add.textContent=t('添加歌曲');add.onclick=()=>choosePlaylistSongs(records,new Set(playlist.mediaIds),async ids=>{this.playlists=await this.api.addToPlaylist(playlist.id,ids);this.render(container,records);});
+  const manage=document.createElement('button');manage.className='quiet';manage.textContent=this.editing?t('完成管理'):t('管理歌曲');manage.onclick=()=>{this.editing=!this.editing;this.render(container,records)};actions.append(rename,editCover,add,manage);container.append(actions);
+  const toolbar=document.createElement('div');toolbar.className='playlist-sort-toolbar';const sortLabel=document.createElement('label');sortLabel.textContent=t('排序');const sort=document.createElement('select');sort.setAttribute('aria-label',t('歌单歌曲排序'));for(const [value,text] of [['custom','当前顺序'],['oldest','按加入时间：从早到晚'],['newest','按加入时间：从晚到早']]){const option=document.createElement('option');option.value=value;option.textContent=t(text);sort.append(option);}sort.onchange=()=>{if(sort.value==='custom')return;const ids=sort.value==='oldest'?playlist.addedMediaIds:[...playlist.addedMediaIds].reverse();void this.api.reorderPlaylist(playlist.id,ids).then(items=>{this.playlists=items;this.render(container,records);}).catch(error=>this.report((error as Error).message));};sortLabel.append(sort);toolbar.append(sortLabel);container.append(toolbar);enhanceSelect(sort);
+  if(!playlist.mediaIds.length){const empty=document.createElement('p');empty.textContent=t('歌单还是空的，点击“添加歌曲”选择本地音乐。');container.append(empty);return;}
+  const selected=new Set<string>();const remove=document.createElement('button');remove.className='quiet';remove.textContent=t('移出歌单');remove.disabled=true;if(this.editing){remove.onclick=()=>{remove.disabled=true;void this.api.removeFromPlaylist(playlist.id,[...selected]).then(items=>{this.playlists=items;this.render(container,records);}).catch(error=>{remove.disabled=false;this.report((error as Error).message);});};toolbar.append(remove);}
+  for(const [index,id] of playlist.mediaIds.entries()){
+   const item=records.find(record=>record.id===id);const row=document.createElement('div');row.className='catalog-track playlist-track';
+   if(this.editing){const check=document.createElement('input');check.type='checkbox';check.setAttribute('aria-label',t('选择歌曲')+' '+(item?.name??''));check.onchange=()=>{if(check.checked)selected.add(id);else selected.delete(id);remove.disabled=!selected.size;};row.append(check);}
+   const name=document.createElement('span');name.className='playlist-track-name';name.textContent=item?.name??t('歌曲记录不可用');row.append(name);const rowActions=document.createElement('div');rowActions.className='catalog-track-actions';
+   if(this.editing){for(const [direction,text] of [[-1,'上移'],[1,'下移']] as const){const move=document.createElement('button');move.className='quiet playlist-move';move.textContent=t(text);move.disabled=index+direction<0||index+direction>=playlist.mediaIds.length;move.onclick=()=>{const ids=[...playlist.mediaIds];[ids[index],ids[index+direction]]=[ids[index+direction],ids[index]];void this.api.reorderPlaylist(playlist.id,ids).then(items=>{this.playlists=items;this.render(container,records);}).catch(error=>this.report((error as Error).message));};rowActions.append(move);}}
+   const button=document.createElement('button');button.className='quiet';button.textContent=!item||item.missing?t('文件不可用'):t('播放');button.disabled=!item||item.missing;if(item)button.onclick=()=>this.play(item,queue);rowActions.append(button);if(item?.kind==='audio')rowActions.append(playlistSongMenu(this.api,item.id,this.report));row.append(rowActions);container.append(row);
+  }
+ }
+}

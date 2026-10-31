@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 const require=createRequire(import.meta.url);
 const {parseSource}=require('../dist/shared/online-sources.js');
-const {OnlineSourceStore}=require('../dist/main/online-source-store.js');
+const {OnlineSourceStore}=require('../dist/main/online/online-source-store.js');
 test('platform links normalize only allowed song and video destinations',()=>{
  assert.equal(parseSource('https://music.163.com/#/song?id=123&foo=bar').remoteId,'123');
  assert.equal(parseSource('https://y.qq.com/n/ryqq/songDetail/0039MnYb0qxYhV').platform,'qq');

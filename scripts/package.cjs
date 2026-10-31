@@ -7,6 +7,8 @@ const local = path.join(root, '.local-electron.json');
 const executable = process.env.ELECTRON_BINARY || (fs.existsSync(path.join(root, 'node_modules/electron')) ? require(path.join(root, 'node_modules/electron')) : JSON.parse(fs.readFileSync(local, 'utf8')).electronBinary);
 const build = spawnSync(process.execPath, [path.join(__dirname, 'build.cjs')], { stdio: 'inherit' });
 if (build.status !== 0) process.exit(build.status || 1);
+const ffmpeg = process.env.YORUSHIKA_FFMPEG;
+if (!ffmpeg || !path.isAbsolute(ffmpeg) || !fs.existsSync(ffmpeg)) throw new Error('请通过 YORUSHIKA_FFMPEG 指定现有 ffmpeg.exe 的绝对路径');
 const destination = path.join(root, 'release', `Yorushika-${metadata.version}-win-x64`);
 if (fs.existsSync(destination)) throw new Error(`Output already exists: ${destination}`);
 fs.cpSync(path.dirname(executable), destination, { recursive: true });
@@ -16,6 +18,9 @@ if(iconResult.status!==0)throw new Error('Windows icon generation failed');
 const app = path.join(destination, 'resources', 'app');
 fs.mkdirSync(app, { recursive: true });
 for (const folder of ['dist/main', 'dist/shared', 'dist/browser', 'src/main', 'src/desktop']) fs.cpSync(path.join(root, folder), path.join(app, folder), { recursive: true });
+const ffmpegDir = path.join(destination, 'resources', 'ffmpeg');
+fs.mkdirSync(ffmpegDir, { recursive: true });
+fs.copyFileSync(ffmpeg, path.join(ffmpegDir, 'ffmpeg.exe'));
 fs.copyFileSync(path.join(root, 'dist/package.json'), path.join(app, 'dist/package.json'));
 fs.writeFileSync(path.join(app, 'package.json'), JSON.stringify({ name: metadata.name, productName: 'Yorushika', version: metadata.version, main: metadata.main, type: 'module' }));
 // Keep the approved visual assets in the application bundle.
@@ -24,7 +29,7 @@ fs.mkdirSync(assets, { recursive: true });
 for (const name of ['yorushika-official-mark.svg', 'yorushika-official-album.jpeg']) {
  fs.copyFileSync(path.join(root, 'src/renderer', name), path.join(assets, name));
 }
-for (const file of ['src/desktop/index.html', 'dist/browser/desktop/app.js', 'dist/browser/desktop/settings-view.js']) {
+for (const file of ['src/desktop/index.html', 'dist/browser/desktop/app.js', 'dist/browser/desktop/settings/settings-view.js']) {
  const filename = path.join(app, file);
  let text = fs.readFileSync(filename, 'utf8');
 

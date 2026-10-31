@@ -4,6 +4,12 @@ import type { LibraryApi } from '../shared/library';
 const library: LibraryApi = {
   list: () => ipcRenderer.invoke('library:list'),
   rename:(id,name)=>ipcRenderer.invoke('library:rename',id,name),
+  removeVideo:id=>ipcRenderer.invoke('library:remove-video',id),
+  subtitleTracks:id=>ipcRenderer.invoke('library:subtitle-tracks',id),
+  subtitleText:(id,index)=>ipcRenderer.invoke('library:subtitle-text',id,index),
+  subtitleOverlay:(id,index,jobId)=>ipcRenderer.invoke('subtitle-overlay:prepare',id,index,jobId),
+  cancelSubtitleOverlay:()=>ipcRenderer.invoke('subtitle-overlay:cancel'),
+  onSubtitleProgress:handler=>{const listener:Parameters<typeof ipcRenderer.on>[1]=(_event,progress)=>handler(progress);ipcRenderer.on('subtitle-overlay:progress',listener);return ()=>ipcRenderer.removeListener('subtitle-overlay:progress',listener);},
   setVideoCategory:(id,category)=>ipcRenderer.invoke('library:video-category',id,category),
   importFiles: kind => ipcRenderer.invoke('library:import', kind),
   relink: id => ipcRenderer.invoke('library:relink', id),
@@ -22,7 +28,7 @@ const collection: CollectionApi = {
  applyPlatformLyrics:(provider,id,remote)=>ipcRenderer.invoke('lyrics:platform-apply',provider,id,remote),
  searchLyrics:(title,artist)=>ipcRenderer.invoke('lyrics:search',title,artist),
  applyOnlineLyrics:(id,candidate)=>ipcRenderer.invoke('lyrics:apply-online',id,candidate),
- renamePlaylist:(id,name)=>ipcRenderer.invoke('collection:rename',id,name),setPlaylistCover:(id,cover)=>ipcRenderer.invoke('collection:cover',id,cover),
+ renamePlaylist:(id,name)=>ipcRenderer.invoke('collection:rename',id,name),setPlaylistCover:(id,cover)=>ipcRenderer.invoke('collection:cover',id,cover),reorderPlaylist:(id,mediaIds)=>ipcRenderer.invoke('collection:reorder',id,mediaIds),
  playlists:()=>ipcRenderer.invoke('collection:list'),createPlaylist:name=>ipcRenderer.invoke('collection:create',name),
  addToPlaylist:(id,items)=>ipcRenderer.invoke('collection:add',id,items),removeFromPlaylist:(id,items)=>ipcRenderer.invoke('collection:remove',id,items),
  lyrics:id=>ipcRenderer.invoke('lyrics:get',id),importLyrics:(id,language)=>ipcRenderer.invoke('lyrics:import',id,language),setOffset:(id,offset)=>ipcRenderer.invoke('lyrics:offset',id,offset),
@@ -46,3 +52,5 @@ contextBridge.exposeInMainWorld('auxWindows',{unlockLyrics:()=>ipcRenderer.invok
 contextBridge.exposeInMainWorld('catalogCoverCache',{get:(id:string)=>ipcRenderer.invoke('catalog-cover:get',id),save:(id:string,url:string)=>ipcRenderer.invoke('catalog-cover:save',id,url)});
 
 contextBridge.exposeInMainWorld('homeGallery',{get:()=>ipcRenderer.invoke('home-gallery:get'),set:(state:unknown)=>ipcRenderer.invoke('home-gallery:set',state)});
+
+contextBridge.exposeInMainWorld('storySources',{open:(url:string)=>ipcRenderer.invoke('story:source',url)});

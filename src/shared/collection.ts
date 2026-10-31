@@ -2,7 +2,7 @@ export interface LyricCandidate { id:number; title:string; artist:string; album:
 export type LyricLanguage = 'original' | 'translation' | 'romaji';
 export interface LyricLine { time: number | null; text: string }
 export interface Lyrics { offset: number; tracks: Record<LyricLanguage, LyricLine[]> }
-export interface Playlist { id: string; name: string; mediaIds: string[]; createdAt:string|null; cover:string }
+export interface Playlist { id: string; name: string; mediaIds: string[]; addedMediaIds:string[]; createdAt:string|null; cover:string }
 export type LyricProvider='netease'|'qq';
 export interface PlatformCandidate {id:string;title:string;artist:string;album:string;cover:string}
 export interface CatalogAssignment {mediaId:string;releaseId:string;track:string}
@@ -31,6 +31,7 @@ export interface CollectionApi {
  createPlaylist(name: string): Promise<Playlist[]>;
  addToPlaylist(id: string, mediaIds: string[]): Promise<Playlist[]>;
  removeFromPlaylist(id: string, mediaIds: string[]): Promise<Playlist[]>;
+ reorderPlaylist(id:string,mediaIds:string[]):Promise<Playlist[]>;
  lyrics(id: string): Promise<Lyrics>;
  importLyrics(id: string, language: LyricLanguage): Promise<Lyrics>;
  setOffset(id: string, offset: number): Promise<void>;

@@ -8,7 +8,7 @@ if (!fs.existsSync(path.join(modules, 'typescript'))) {
   modules = path.resolve(path.dirname(local.electronBinary), '../..');
 }
 const ts = require(path.join(modules, 'typescript'));
-const files = ['online-sources-ipc', 'collection-store', 'collection-ipc', 'library-store', 'library-service', 'library-ipc', 'preload'].map(name => path.join(root, 'src/main', name + '.ts'));
+const files = ['online/online-sources-ipc', 'collection/collection-store', 'collection/collection-ipc', 'library/library-store', 'library/library-service', 'library/library-ipc', 'preload'].map(name => path.join(root, 'src/main', name + '.ts'));
 const options = {
   target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS,
   moduleResolution: ts.ModuleResolutionKind.Node10, ignoreDeprecations: '6.0',

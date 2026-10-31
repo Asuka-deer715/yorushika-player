@@ -1,0 +1,8 @@
+import {t} from '../localization/i18n.js';
+export function showOnboarding(){
+ if(document.querySelector('.onboarding-dialog'))return;
+ const dialog=document.createElement('dialog');dialog.className='edit-dialog onboarding-dialog';let step=0;
+ const slides=[['欢迎来到 Yorushika','这里为你的本地音乐与影像留一个位置。先花一分钟了解常用入口。'],['导入你的收藏','在左侧“导入与整理”中选择歌曲或视频。原文件仍留在原来的位置。'],['聆听与浏览','点击歌曲开始播放；点击底部封面展开播放页。你可以在作品目录中浏览专辑与相关曲目。'],['歌词与个性化','通过设置调整歌词、主题与主页封面。稍后可以在设置中再次查看本引导。']];
+ const draw=()=>{dialog.replaceChildren();const title=document.createElement('h2');title.textContent=t(slides[step][0]);const text=document.createElement('p');text.textContent=t(slides[step][1]);const count=document.createElement('small');count.textContent=`${step+1} / ${slides.length}`;const actions=document.createElement('div');actions.className='actions';const back=document.createElement('button');back.className='quiet';back.textContent=t('上一步');back.disabled=step===0;back.onclick=()=>{step--;draw();};const next=document.createElement('button');next.className='primary';next.textContent=step===slides.length-1?t('完成'):t('下一步');next.onclick=()=>{if(step<slides.length-1){step++;draw();}else finish();};const skip=document.createElement('button');skip.className='quiet';skip.textContent=t('跳过');skip.onclick=finish;actions.append(back,next,skip);dialog.append(title,text,count,actions);next.focus();};
+ const finish=()=>{localStorage.setItem('onboarding-complete','true');dialog.close();};dialog.addEventListener('cancel',event=>{event.preventDefault();finish();});dialog.onclose=()=>dialog.remove();document.body.append(dialog);dialog.showModal();draw();
+}
