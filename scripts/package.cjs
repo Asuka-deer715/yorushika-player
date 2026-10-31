@@ -24,7 +24,7 @@ fs.mkdirSync(assets, { recursive: true });
 for (const name of ['yorushika-official-mark.svg', 'yorushika-official-album.jpeg']) {
  fs.copyFileSync(path.join(root, 'src/renderer', name), path.join(assets, name));
 }
-for (const file of ['src/desktop/index.html', 'dist/browser/desktop/app.js']) {
+for (const file of ['src/desktop/index.html', 'dist/browser/desktop/app.js', 'dist/browser/desktop/settings-view.js']) {
  const filename = path.join(app, file);
  let text = fs.readFileSync(filename, 'utf8');
 

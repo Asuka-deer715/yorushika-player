@@ -34,6 +34,24 @@ The following describes the current development source:
 - **Personalization**: Paper, Charcoal, Rain and Cappuccino, Blue Hour and custom palettes; configurable intro and system tray.
 - **Online metadata**: NetEase, QQ Music and LRCLIB lyric search, plus online artwork association. Availability depends on the provider and network. QQ lyric retrieval has not been verified successfully in the development environment.
 
+### Organize your collection
+
+- Manage audio and video sources separately while keeping the original media files; relink files after moving them.
+- Browse band, n-buna, suis and collaboration releases, including missing tracks and local candidates.
+- Create playlists, search your collection, and browse music videos and live performances.
+
+### Listen with lyrics and video
+
+- Open the full player, inspect the queue, and control playback, volume and mute.
+- Import original, translated and romanized lyrics, adjust their timing and click synchronized lines to seek.
+- Link local music videos to songs and watch in split or background layout; videos can use the linked song's lyrics.
+- Look up lyrics and artwork under Online links; availability and results depend on third-party services.
+
+### Make it yours
+
+- Choose a preset or custom palette, font and lyric display options in Settings.
+- Configure the intro and home-page ink animation. Choose whether closing hides the app to the tray or exits, and change that choice later in Settings.
+
 The video import action accepts ordinary files or a Bilibili download cache directory. Cache conversion uses FFmpeg to combine separate streams into a new MP4; **FFmpeg is not yet bundled with a source build**. This workflow has only been verified with an existing FFmpeg installation in the development environment. End users do not need to install `ffprobe`.
 
 ## Usage
@@ -58,7 +76,7 @@ npm test
 npm run package:win
 ```
 
-`start.cmd` is for source development. Regular users should use the complete package from Releases. `font-candidates/`, `.runtime/`, `.local-electron.json`, and personal media are excluded from the repository.
+`start.cmd` is for source development. The locally built `Yorushika-Dev.exe` starts the source build without a console and still requires Node.js and development dependencies; its source is `scripts/source-launcher.cs`. Regular users should use the complete package from Releases. `font-candidates/`, `.runtime/`, `.local-electron.json`, and personal media are excluded from the repository.
 
 The current source references `src/renderer/yorushika-official-mark.svg` and `src/renderer/yorushika-official-album.jpeg`; these assets are not included in the public repository. Supply them only after confirming the appropriate rights. Candidate fonts are also excluded. Without those assets, parts of the interface and intro may be incomplete.
 

@@ -1,3 +1,4 @@
+export type VideoCategory = 'official'|'live'|'unclassified';
 export type MediaKind = 'audio' | 'mv';
 export interface MediaRecord {
   id: string;
@@ -5,6 +6,7 @@ export interface MediaRecord {
   kind: MediaKind;
   url: string;
   missing: boolean;
+  videoCategory?: VideoCategory;
 }
 export interface ImportResult {
   items: MediaRecord[];
@@ -13,6 +15,7 @@ export interface ImportResult {
 }
 export interface LibraryApi {
   list(): Promise<MediaRecord[]>;
+  setVideoCategory(id:string,category:VideoCategory):Promise<MediaRecord[]>;
   importFiles(kind: MediaKind): Promise<ImportResult>;
   relink(id: string): Promise<MediaRecord[]>;
 }

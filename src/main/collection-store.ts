@@ -13,6 +13,7 @@ export class CollectionStore {
    CREATE TABLE IF NOT EXISTS lyric_tracks(media_id TEXT REFERENCES media(id),language TEXT NOT NULL,lines TEXT NOT NULL,PRIMARY KEY(media_id,language));
    CREATE TABLE IF NOT EXISTS lyric_offsets(media_id TEXT PRIMARY KEY REFERENCES media(id),offset REAL NOT NULL);`);
  }
+ audioForVideo(id:string):string|null{const rows=this.db.prepare('SELECT audio_id FROM media_video_links WHERE video_id=? LIMIT 2').all(id);return rows.length===1?rows[0].audio_id as string:null;}
  videos(id:string):string[]{return this.db.prepare('SELECT video_id FROM media_video_links WHERE audio_id=? ORDER BY rowid').all(id).map(row=>row.video_id as string);}
  linkVideo(audio:string,video:string){const pair=this.db.prepare('SELECT id,kind FROM media WHERE id IN (?,?)').all(audio,video);if(!pair.some(row=>row.id===audio&&row.kind==='audio')||!pair.some(row=>row.id===video&&row.kind==='mv'))throw new Error('请选择本地音频与视频');this.db.prepare('INSERT INTO media_video_links VALUES(?,?) ON CONFLICT DO NOTHING').run(audio,video);}
  unlinkVideo(audio:string,video:string){this.db.prepare('DELETE FROM media_video_links WHERE audio_id=? AND video_id=?').run(audio,video);}

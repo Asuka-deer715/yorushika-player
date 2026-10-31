@@ -13,6 +13,7 @@ export function registerCollectionIpc(store:CollectionStore,entryUrl:string){
  const auth=(event:IpcMainInvokeEvent)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');};
  const id=(value:unknown):string=>{if(typeof value!=='string'||!value.length||value.length>100)throw new Error('无效的记录编号');return value;};
  const ids=(value:unknown):string[]=>{if(!Array.isArray(value)||value.length>10000)throw new Error('无效的选择列表');return value.map(id);};
+ ipcMain.handle('video-links:audio-for-video',(e,v)=>{auth(e);return store.audioForVideo(id(v));});
  ipcMain.handle('video-links:list',(e,a)=>{auth(e);return store.videos(id(a));});
  ipcMain.handle('video-links:add',(e,a,v)=>{auth(e);store.linkVideo(id(a),id(v));});
  ipcMain.handle('video-links:remove',(e,a,v)=>{auth(e);store.unlinkVideo(id(a),id(v));});

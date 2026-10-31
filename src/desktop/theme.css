@@ -25,3 +25,32 @@ body,.titlebar{background:var(--bg);color:var(--text)}nav button,.source-status,
 .lyric-group{position:relative;padding-left:52px}.lyric-timestamp{position:absolute;left:0;top:18px;font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}.lyric-group.active .lyric-timestamp{color:var(--accent)}.volume{gap:8px}.volume button{padding:4px;display:grid;place-items:center}.volume output{font-size:12px;color:var(--muted);min-width:32px;font-variant-numeric:tabular-nums}@media(max-width:1100px){.volume output{font-size:12px}}
 
 .lyric-timestamp{opacity:0;transition:opacity .16s ease}.lyric-group:hover .lyric-timestamp,.lyric-group:focus-visible .lyric-timestamp{opacity:1}@media(prefers-reduced-motion:reduce){.lyric-timestamp{transition:none}}
+
+.settings-tabs{display:flex;gap:30px;overflow-x:auto;border-bottom:1px solid var(--line);margin:26px 0 34px}.settings-tabs button{position:relative;white-space:nowrap;padding:12px 2px 16px;color:var(--muted)}.settings-tabs button[aria-pressed=true]{color:var(--accent)}.settings-tabs button[aria-pressed=true]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px;background:var(--accent)}.settings-content>h2{margin-bottom:18px}.settings-content .theme-settings{padding-top:12px}.settings-content .lyrics-settings{padding-top:0}.settings-intro{margin-top:40px}.settings-content{max-width:900px}
+
+.playback-page .section-heading:has(.background-track-title){position:relative;min-height:54px}.background-track-title{position:absolute;left:50%;transform:translateX(-50%);width:min(42%,500px);text-align:center;pointer-events:none}.playback-page .section-heading .background-track-title h1{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:22px;font-weight:600;color:var(--text)}.background-track-title p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+
+.video-tabs{margin:12px 0 24px}.video-search{width:min(100%,320px);margin-bottom:28px}.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:34px 22px}.video-card{min-width:0}.video-card-play{width:100%;padding:0;text-align:left}.video-card-play strong{display:block;margin-top:12px;font-size:15px;line-height:1.5;overflow-wrap:anywhere}.video-thumbnail{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:12px;background:var(--soft);display:grid;place-items:center;color:var(--muted)}.video-thumbnail>span:first-child{font-size:12px}.video-thumbnail video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}.video-thumbnail video.ready{opacity:1}.video-play-overlay{position:absolute;inset:0;display:grid;place-items:center;background:#17242c99;color:white;opacity:0;transition:opacity .2s}.video-card-play:hover .video-play-overlay,.video-card-play:focus-visible .video-play-overlay{opacity:1}.video-classify{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--muted);font-size:12px}.video-classify .soft-select{min-width:120px}.video-classify .soft-select-trigger{padding:6px 10px}.video-empty{grid-column:1/-1;padding:20px 0}@media(prefers-reduced-motion:reduce){.video-play-overlay{transition:none}}
+
+/* Synced lyrics: past lines remain distinct from the current and upcoming lines. */
+.reading-lyrics .lyric-group.played{color:color-mix(in srgb,var(--text) 72%,var(--bg))}.reading-lyrics .lyric-group.active{color:var(--accent);font-weight:700}.background-video .reading-lyrics .lyric-group.played{color:#b8c2c8}.background-video .reading-lyrics .lyric-group:not(.played):not(.active){color:#77868d}.background-video .reading-lyrics .lyric-group.active{color:#fff}
+
+.mv-fullscreen-exit,.mv-fullscreen-play{display:none}
+.listening:fullscreen{display:block;position:relative;isolation:isolate;width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;background:#080a0b;color:white;border-radius:0;overflow:hidden}
+.listening:fullscreen #visual{position:absolute;inset:0;z-index:-2}
+.playback-page .listening:fullscreen video{width:100%;height:100%;max-height:none;object-fit:contain}
+.listening:fullscreen::before{content:'';position:absolute;inset:55% 0 0;z-index:-1;background:linear-gradient(transparent,#0009)}
+.listening:fullscreen>div:not(#visual){position:absolute;inset:0;max-width:none;margin:0;pointer-events:none}
+.listening:fullscreen>div:not(#visual)>h1,.listening:fullscreen>div:not(#visual)>p{display:none}
+.listening:fullscreen #lyrics-panel{position:absolute;inset:0;pointer-events:none}
+.listening:fullscreen .reading-lyrics{position:absolute;left:10%;right:10%;bottom:95px;height:auto;max-height:32vh;overflow:hidden;padding:0;mask-image:none;text-align:center;pointer-events:auto}
+.listening:fullscreen .lyric-group{padding:0;color:white!important;text-shadow:0 2px 9px #000;font-weight:600}
+.listening:fullscreen .lyric-group:not(.active),.listening:fullscreen .lyric-timestamp,.listening:fullscreen .reading-lyrics section{display:none}
+.listening:fullscreen .lyric-group p{font-size:clamp(22px,2.4vw,34px);line-height:1.5}
+.listening:fullscreen .lyric-group .lyric-translation,.listening:fullscreen .lyric-group .lyric-romaji{font-size:clamp(16px,1.5vw,23px)}
+.listening:fullscreen .lyric-shortcuts{position:absolute;right:28px;bottom:24px;margin:0;pointer-events:auto}
+.listening:fullscreen .lyric-shortcuts button{color:#fff;background:#0008}
+.listening:fullscreen .mv-fullscreen-exit,.listening:fullscreen .mv-fullscreen-play{display:block;position:absolute;z-index:5;padding:10px 15px;border:1px solid #ffffff70;border-radius:10px;background:#0009;color:white}
+.listening:fullscreen .mv-fullscreen-exit{top:24px;right:28px}.listening:fullscreen .mv-fullscreen-play{bottom:24px;left:28px}
+
+.mv-fullscreen-timeline{display:none}.listening:fullscreen .mv-fullscreen-timeline{display:flex;position:absolute;z-index:2;left:0;right:0;bottom:0;height:76px;padding:0 205px 0 120px;align-items:center;gap:12px;color:white;font-size:12px;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .2s}.listening:fullscreen .mv-fullscreen-timeline:hover,.listening:fullscreen .mv-fullscreen-timeline:focus-within{opacity:1}.mv-fullscreen-timeline input{flex:1;min-width:0;accent-color:#fff;cursor:pointer}@media(prefers-reduced-motion:reduce){.mv-fullscreen-timeline{transition:none!important}}

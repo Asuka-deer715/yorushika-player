@@ -19,6 +19,8 @@ const { CollectionStore } = require('../../dist/main/collection-store.js');
 const { registerCollectionIpc } = require('../../dist/main/collection-ipc.js');
 const { OnlineSourceStore, registerOnlineSourcesIpc } = require('../../dist/main/online-sources-ipc.js');
 const {PlayerTray}=require('./tray.cjs');
+const {CloseBehavior}=require('./close-behavior.cjs');
+const closeBehavior=new CloseBehavior(app,path.join(dataRoot,'window-preferences.json'));
 let playerTray;
 const windowColors=new WeakMap();
 const introWindows=new WeakSet();
@@ -53,12 +55,16 @@ function createWindow() {
   window.webContents.on('will-navigate', (event, url) => {
     if (url !== entryUrl) event.preventDefault();
   });
+  closeBehavior.attach(window);
   window.once('ready-to-show', () => window.show());
   window.loadFile(entryPath);
   playerTray=new PlayerTray(path.join(__dirname,'../desktop/assets/elma.ico'),window,()=>app.quit());
 }
 
 app.whenReady().then(() => {
+  ipcMain.handle('window:close-response',(event,mode,remember)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');closeBehavior.respond(BrowserWindow.fromWebContents(event.sender),mode,remember);});
+  ipcMain.handle('window:close-behavior:get',event=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');return closeBehavior.get();});
+  ipcMain.handle('window:close-behavior:set',(event,mode)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');closeBehavior.set(mode);});
   ipcMain.handle('appearance:visible',event=>{
     if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');
     const window=BrowserWindow.fromWebContents(event.sender);

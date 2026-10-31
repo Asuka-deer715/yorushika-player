@@ -6,6 +6,7 @@ export interface Playlist { id: string; name: string; mediaIds: string[] }
 export type LyricProvider='netease'|'qq';
 export interface PlatformCandidate {id:string;title:string;artist:string;album:string;cover:string}
 export interface CollectionApi {
+ audioForVideo(videoId:string):Promise<string|null>;
  videos(audioId:string):Promise<string[]>;
  linkVideo(audioId:string,videoId:string):Promise<void>;
  unlinkVideo(audioId:string,videoId:string):Promise<void>;

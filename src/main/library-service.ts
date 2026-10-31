@@ -17,9 +17,10 @@ export class LibraryService {
       let missing = false;
       try { await access(path, constants.R_OK); }
       catch { missing = true; }
-      return { id, name:displayMediaName(name), kind, missing, url: `local-media://library/${id}` };
+      return { id, name:displayMediaName(name), kind, missing, videoCategory:kind==='mv'?this.store.videoCategory(id):undefined, url: `local-media://library/${id}` };
     }));
   }
+  async setVideoCategory(id:string,category:import('../shared/library').VideoCategory){this.store.setVideoCategory(id,category);return this.list();}
   private async checkFile(path: string, kind: MediaKind): Promise<string> {
     if (!extensions[kind].includes(extname(path).slice(1).toLowerCase())) throw new Error('文件扩展名与媒体类型不符');
     const canonical = await realpath(path);

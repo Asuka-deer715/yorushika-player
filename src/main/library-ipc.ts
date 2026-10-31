@@ -11,6 +11,7 @@ export function registerLibraryIpc(service: LibraryService, entryUrl: string): v
       throw new Error('不允许的调用来源');
     }
   }
+  ipcMain.handle('library:video-category',(event,id:unknown,category:unknown)=>{authorize(event);if(typeof id!=='string'||!['official','live','unclassified'].includes(category as string))throw new Error('无效的视频分类');return service.setVideoCategory(id,category as import('../shared/library').VideoCategory);});
   ipcMain.handle('library:list', event => { authorize(event); return service.list(); });
   ipcMain.handle('library:import', async (event, kind: MediaKind) => {
     authorize(event);

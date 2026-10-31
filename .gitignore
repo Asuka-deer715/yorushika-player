@@ -17,3 +17,15 @@ font-candidates/
 *.partial
 
 release/
+
+# Locally built source launcher
+Yorushika-Dev.exe
+
+# Private project planning documents
+/产品需求文档.md
+/技术架构设计.md
+
+# Internal documentation stays local; public README files are the exception
+*.md
+!/README.md
+!/README.en.md
