@@ -1,3 +1,4 @@
+import { displayMediaName } from '../shared/media-name';
 import { access, realpath, stat } from 'node:fs/promises';
 import { basename, extname } from 'node:path';
 import { constants } from 'node:fs';
@@ -16,7 +17,7 @@ export class LibraryService {
       let missing = false;
       try { await access(path, constants.R_OK); }
       catch { missing = true; }
-      return { id, name, kind, missing, url: `local-media://library/${id}` };
+      return { id, name:displayMediaName(name), kind, missing, url: `local-media://library/${id}` };
     }));
   }
   private async checkFile(path: string, kind: MediaKind): Promise<string> {

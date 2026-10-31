@@ -1,6 +1,7 @@
-const { app, BrowserWindow, Menu, protocol, net } = require('electron');
+const { app, BrowserWindow, Menu, protocol, net, ipcMain } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const { mediaResponse } = require('./media-response.cjs');
 
 const fs = require('node:fs');
 const { LibraryStore } = require('../../dist/main/library-store.js');
@@ -17,6 +18,10 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'local-media', privileges: { sta
 const { CollectionStore } = require('../../dist/main/collection-store.js');
 const { registerCollectionIpc } = require('../../dist/main/collection-ipc.js');
 const { OnlineSourceStore, registerOnlineSourcesIpc } = require('../../dist/main/online-sources-ipc.js');
+const {PlayerTray}=require('./tray.cjs');
+let playerTray;
+const windowColors=new WeakMap();
+const introWindows=new WeakSet();
 let sourceStore;
 let collectionStore;
 let store;
@@ -26,6 +31,7 @@ const entryUrl = pathToFileURL(entryPath).href;
 function createWindow() {
   Menu.setApplicationMenu(null);
   const window = new BrowserWindow({
+    icon: path.join(__dirname, '../desktop/assets/elma.ico'),
     width: 1440,
     height: 900,
     minWidth: 960,
@@ -49,9 +55,29 @@ function createWindow() {
   });
   window.once('ready-to-show', () => window.show());
   window.loadFile(entryPath);
+  playerTray=new PlayerTray(path.join(__dirname,'../desktop/assets/elma.ico'),window,()=>app.quit());
 }
 
 app.whenReady().then(() => {
+  ipcMain.handle('appearance:visible',event=>{
+    if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');
+    const window=BrowserWindow.fromWebContents(event.sender);
+    if(window.isVisible())return;
+    return new Promise(resolve=>window.once('show',()=>resolve()));
+  });
+  ipcMain.handle('appearance:intro',(event,active)=>{
+    if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl||typeof active!=='boolean')throw new Error('不允许的调用');
+    const window=BrowserWindow.fromWebContents(event.sender);
+    if(active)introWindows.add(window);else introWindows.delete(window);
+    const colors=windowColors.get(window)??{color:'#f5f5f1',symbolColor:'#202c35'};
+    window.setTitleBarOverlay(active?{color:'#17242c',symbolColor:'#17242c'}:colors);
+    window.setClosable(!active);window.setMinimizable(!active);window.setMaximizable(!active);
+  });
+  ipcMain.handle('appearance:colors',(event,background,foreground)=>{
+    if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');
+    if(![background,foreground].every(value=>typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value)))throw new Error('无效的颜色');
+    const window=BrowserWindow.fromWebContents(event.sender);window.setBackgroundColor(background);const colors={color:background,symbolColor:foreground};windowColors.set(window,colors);if(!introWindows.has(window))window.setTitleBarOverlay(colors);
+  });
   store = new LibraryStore(path.join(dataRoot, 'library.sqlite'));
   collectionStore = new CollectionStore(path.join(dataRoot, 'library.sqlite'));
   registerCollectionIpc(collectionStore, entryUrl);
@@ -64,7 +90,7 @@ app.whenReady().then(() => {
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response(null, { status: 405 });
     try {
       const media = store.get(url.pathname.slice(1));
-      return await net.fetch(pathToFileURL(media.path).href, { method: request.method, headers: request.headers });
+      return await mediaResponse(media.path,request);
     } catch (error) {
       console.error('媒体读取失败', error);
       return new Response('Media unavailable', { status: 404 });
@@ -80,4 +106,4 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('will-quit', () => { sourceStore?.close(); collectionStore?.close(); store?.close(); });
+app.on('will-quit', () => { playerTray?.destroy(); sourceStore?.close(); collectionStore?.close(); store?.close(); });

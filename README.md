@@ -1,102 +1,69 @@
-# Yorushika Player / 夜鹿播放器
+<div align="center">
 
-面向 Windows 的本地音乐播放器，以 Yorushika（ヨルシカ）的作品与个人收藏为中心。当前为持续开发中的预览版，提供包含运行时的 Windows x64 ZIP 应用包。
+# Yorushika Player
 
-A local-first Windows music player centered on Yorushika and your personal collection. This is a work-in-progress preview with a self-contained Windows x64 ZIP application.
+<img src="src/desktop/assets/elma.svg" width="128" alt="Elma">
 
-## 中文
+**为喜欢的声音留一个位置。**<br>
+一个围绕ヨルシカ及个人收藏的 Windows 本地音乐播放器。
 
-### 已实现
+[简体中文](README.md) · [English](README.en.md)
 
-- TypeScript 重写界面，融合式标题栏，完整播放页向上展开、向下收回；Esc 返回原浏览页。
-- 批量导入本地音频和视频，SQLite 保存文件引用；去重、搜索、失效文件重新关联。
-- 播放／暂停、进度、音量、上一首／下一首与单曲循环。
-- 创建歌单、批量加入／移出，同一媒体可属于多个歌单。
-- 每个媒体版本独立关联原文、翻译、罗马音歌词，支持 UTF-8 LRC／TXT、时间偏移、高亮和滚动。
-- 视频左右布局与压暗背景布局；本机字体候选切换。
+[下载 Windows 版](https://github.com/Asuka-deer715/yorushika-player/releases) · [快速开始](#快速开始) · [功能一览](#功能一览) · [开发](#开发) · [问题反馈](https://github.com/Asuka-deer715/yorushika-player/issues)
 
-导入只记录原路径，不复制、移动或删除源文件。换电脑需要重新关联媒体。实际格式兼容性取决于 Electron 内置解码能力，文件扩展名可被导入不代表所有编码均可播放。
+</div>
 
-### 下载与使用
+> 项目仍在开发。GitHub 上最新源码包含的功能可能多于 Releases 中的 v0.1.2 预览包；此次源码更新不代表已发布新安装包。
 
-1. 在 [Releases](https://github.com/Asuka-deer715/yorushika-player/releases) 下载 `Yorushika-0.1.2-win-x64.zip`，不要下载 Source code。
-2. 完整解压到你选择的文件夹。
-3. 双击 `Yorushika.exe`，然后导入本地音乐。
+## 快速开始
 
-不需要 Node.js、npm 或命令行。应用包包含 Electron 运行时；请保留解压出的配套文件，不要只移动 exe。该预览包尚未代码签名。
+1. 在 [Releases](https://github.com/Asuka-deer715/yorushika-player/releases) 下载 Windows x64 预览包，并完整解压。
+2. 运行 `Yorushika.exe`，在「导入与整理」中选择自己持有的音乐或视频。
+3. 点击播放栏打开完整播放页，在设置里调整字体、配色、歌词和开场动画。
 
-应用数据默认保存在当前 Windows 用户的 `%APPDATA%/yorushika-player` 下，不要求 G 盘。缓存与日志也使用该用户的数据目录。源媒体始终保留原位置。
+已发布的 v0.1.2 包不需要安装 Node.js 或运行命令。请保留解压出的全部文件；该包未签名。音乐和视频默认保留在原位置，应用保存文件关联。
 
-### 开发者运行
+## 功能一览
 
-仅开发源码时需要 Node.js 24+：
+以下描述当前源码开发版：
+
+- **本地收藏**：导入音乐和视频，搜索、建立歌单、检查丢失文件并重新关联。
+- **播放与歌词**：播放队列、音量和静音、上次播放状态恢复；支持 LRC／TXT、原文、翻译、罗马音、时间偏移及点击歌词跳转。
+- **完整播放页**：封面、歌词和本地 MV；可关联多个视频版本，切换媒体时从头播放。
+- **作品目录**：浏览已核对的乐队、n-buna、suis 和部分合作作品；曲目显示待收录或本地同名候选。目录与自动匹配仍在完善。
+- **个性化**：暖白、柔黑、Rain and Cappuccino、蓝调夜色和自定义配色；可配置开场动画，支持系统托盘。
+- **在线资料**：网易云、QQ 音乐和 LRCLIB 歌词搜索入口，以及在线封面关联；来源可用性取决于网络和平台。QQ 歌词获取在开发环境中未验证成功。
+
+选择「导入视频」可选择普通视频文件或 B 站下载缓存目录。缓存导入需要 FFmpeg 合并音视频并保存新文件；**FFmpeg 还没有随当前源码构建的应用包提供**，该功能目前只在具备可用 FFmpeg 的开发环境中验证过。普通用户无需安装 `ffprobe`。
+
+## 使用说明
+
+- **本地 MV**：先导入音频和视频，在播放栏点击「MV」。一个已关联或明确同名的视频会直接播放；多个候选可选择。没有单独歌词的视频可沿用关联音频的歌词。
+- **歌词与封面**：播放本地歌曲后，在「在线链接」搜索；本地歌词导入及时间偏移位于「设置」。网络服务可能变更或不可用。
+- **B 站缓存**：选择下载目录，再选择转换结果的保存目录。原缓存保持不变；较大的视频需要足够的磁盘空间。
+- **数据位置**：打包版默认使用当前用户的应用数据目录；开发版使用项目内 `.runtime/`。移动源文件后需要重新关联。
+
+## 尚在完善
+
+专辑封面和完整发行资料、作品自动匹配与手动修正、跨语言别名搜索、完整音视频格式兼容性、B 站缓存转换依赖随包分发及正式签名发布仍未完成。账号登录和私人歌单同步目前不在已实现功能中。
+
+## 开发
+
+需要 Node.js 24+。以下命令使用各用户系统的默认位置；开发目录和缓存可按个人环境配置。
 
 ```powershell
 npm install
 npm start
+npm test
 npm run package:win
 ```
 
-使用 npm、Electron 和系统的默认缓存路径，不强制指定盘符。开发运行数据位于 `.runtime/`，打包输出位于 `release/`。本机工具链复用配置 `.local-electron.json` 不提交仓库。`start.cmd` 是开发启动入口，普通用户使用应用包中的 exe。
+`start.cmd` 仅用于源码开发；普通用户使用 Releases 中的完整应用包。项目内 `font-candidates/`、`.runtime/`、`.local-electron.json` 和用户媒体不提交仓库。
 
-### 尚未完成
+源码界面目前引用的官方标志和专辑图像位于 `src/renderer/yorushika-official-mark.svg` 与 `src/renderer/yorushika-official-album.jpeg`，这两项不包含在公开仓库中；在确认使用权限后需自行提供。字体候选同样不随源码仓库发布。缺少这些素材时，界面或开场画面可能不完整。
 
-源码开发版已加入可跳过／重播的启动动画、网易云／QQ 单曲链接收藏、平台歌词获取入口和 B 站 BV／链接嵌入入口。网易云实测返回原文、翻译和罗马音；QQ 歌词请求在开发环境受阻，暂未验证可用。设置中获取歌词只替换平台返回的语言，其他语言保留；应用不自动生成翻译。B 站使用官方外链播放器，示例视频返回不可用，尚未验证实际播放，且不与本地进度条同步。
+## 素材与许可
 
-以上改动尚未包含在 v0.1.2 下载包中。音乐平台音频导入／在线播放、平台内歌曲搜索、歌单批量导入、作品目录与匹配、专辑排序、MV／现场分类、首次引导、混合多语言歌词自动识别及正式安装器仍未完成。
+这是非官方粉丝项目，与ヨルシカ及音乐平台没有官方关联。音乐、视频、歌词、封面、商标和字体的权利属于各自权利人。源代码尚未指定开源许可证；公开仓库并不自动授予再分发权限。官方发行资料可查阅 [ヨルシカ官方网站](https://yorushika.com/discography/)。
 
-### 素材
-
-应用包保留当前展示的专辑封面与夜鹿标志，使用系统字体。图片来自 [Yorushika 官方作品页面](https://yorushika.com/discography/detail/6/)，权利归原权利人所有；本项目非官方项目，不宣称已获得官方授权。用户媒体、歌词、运行数据库和字体候选不随包发布。
-
-官方图像本机路径为 `src/renderer/yorushika-official-album.jpeg` 和 `src/renderer/yorushika-official-mark.svg`。只有获得使用权限后才应自行放入。公开仓库不代表获得音乐、歌词、商标或字体的使用授权。项目代码的开源许可证尚未选定；public 可见性不等于许可任意再分发。
-
-UI 信息组织参考 [Twilight Echo](https://github.com/Px-asen/Twilight_Echo)，未引入其源代码。新界面位于 `src/desktop/`；`src/renderer/` 与 `src/core/` 保留为旧样本，不是当前页面入口。
-
-## English
-
-### Features
-
-- Rewritten TypeScript desktop interface with integrated window controls and a slide-up full player. Press Esc to return to browsing.
-- Batch local audio/video imports, persistent SQLite references, search, deduplication and relinking missing files.
-- Playback controls, seeking, volume, previous/next and repeat.
-- Persistent playlists with batch add/remove and many-to-many membership.
-- Separate original, translated and romanized lyric tracks per media version. UTF-8 LRC/TXT, timing offsets, highlighting and scrolling are supported.
-- Split video/lyrics and dimmed background-video layouts.
-
-Imports reference existing files without copying, moving or deleting them. Decoder support depends on Electron; an accepted file extension does not guarantee codec compatibility.
-
-### Download and run
-
-Download `Yorushika-0.1.2-win-x64.zip` from [Releases](https://github.com/Asuka-deer715/yorushika-player/releases), extract the entire archive, and double-click **Yorushika.exe**. No Node.js, npm or terminal is required. Keep the accompanying runtime files together. This preview is not code-signed.
-
-Application data defaults to the current Windows user's `%APPDATA%/yorushika-player` directory. No particular drive letter is required. Media stays in its original location.
-
-Developers only: install Node.js 24+, then run `npm install`, `npm start`, and `npm run package:win` as needed. Standard system/package-manager cache locations are used. Development data lives in `.runtime/`; packages are generated under `release/`.
-
-### Status and assets
-
-The source development build now includes a skippable/replayable intro, NetEase/QQ song-link bookmarks, a platform-lyrics action in Settings, and a Bilibili BV/link embed. NetEase returned original, translated and romanized lyrics in a live check. QQ lyric requests were blocked in the development environment. Only languages returned by the provider are replaced. Bilibili uses its official external player; the sample video was unavailable, so actual playback remains unverified and is not synchronized with local transport controls.
-
-These changes are not included in the v0.1.2 download. Platform audio import/streaming, platform song search, playlist URL import, editable release catalogs, matching, album sorting, video categories, onboarding and signed installers remain unfinished.
-
-The application bundle retains the album artwork and Yorushika mark used in the interface, and uses system fonts. Candidate fonts, personal media, lyrics and runtime databases are excluded. Artwork is sourced from the [official Yorushika release page](https://yorushika.com/discography/detail/6/). Rights remain with their respective owners; this is an unofficial project and does not claim official permission. No source-code license has been selected yet; public visibility alone is not a redistribution license.
-
-The UI organization takes inspiration from [Twilight Echo](https://github.com/Px-asen/Twilight_Echo), without copying its source code.
-
-## Structure / 目录
-
-| Path | Purpose |
-| --- | --- |
-| `src/desktop/` | Current TypeScript UI and playback / 当前界面与播放 |
-| `src/main/` | Electron, IPC, file dialogs and SQLite / 桌面与数据层 |
-| `src/shared/` | API contracts and lyric parsing / 类型契约与歌词解析 |
-| `scripts/` | Build and launch / 构建与启动 |
-| `tests/` | Logic and persistence tests / 逻辑与持久化测试 |
-
-```powershell
-npm run build
-npm test
-```
-
-Tests cover selected logic and persistence paths; they do not replace real-device codec and visual testing. / 测试覆盖部分逻辑与持久化路径，不代替真实媒体和视觉验收。
+界面组织参考 [Twilight Echo](https://github.com/Px-asen/Twilight_Echo)，未复制其源代码。

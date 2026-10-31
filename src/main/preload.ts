@@ -10,6 +10,10 @@ contextBridge.exposeInMainWorld('library', library);
 
 import type { CollectionApi } from '../shared/collection';
 const collection: CollectionApi = {
+ videos:id=>ipcRenderer.invoke('video-links:list',id),linkVideo:(a,v)=>ipcRenderer.invoke('video-links:add',a,v),unlinkVideo:(a,v)=>ipcRenderer.invoke('video-links:remove',a,v),
+ cover:id=>ipcRenderer.invoke('cover:get',id),setCover:(id,url)=>ipcRenderer.invoke('cover:set',id,url),
+ searchPlatformLyrics:(provider,title,artist)=>ipcRenderer.invoke('lyrics:platform-search',provider,title,artist),
+ applyPlatformLyrics:(provider,id,remote)=>ipcRenderer.invoke('lyrics:platform-apply',provider,id,remote),
  searchLyrics:(title,artist)=>ipcRenderer.invoke('lyrics:search',title,artist),
  applyOnlineLyrics:(id,candidate)=>ipcRenderer.invoke('lyrics:apply-online',id,candidate),
  playlists:()=>ipcRenderer.invoke('collection:list'),createPlaylist:name=>ipcRenderer.invoke('collection:create',name),
@@ -21,3 +25,5 @@ contextBridge.exposeInMainWorld('collection',collection);
 import type { OnlineSourcesApi } from '../shared/online-sources';
 const sources:OnlineSourcesApi={list:()=>ipcRenderer.invoke('sources:list'),add:(input,title)=>ipcRenderer.invoke('sources:add',input,title),remove:key=>ipcRenderer.invoke('sources:remove',key),open:key=>ipcRenderer.invoke('sources:open',key),lyrics:(key,mediaId)=>ipcRenderer.invoke('sources:lyrics',key,mediaId)};
 contextBridge.exposeInMainWorld('sources',sources);
+
+contextBridge.exposeInMainWorld('appearance',{setIntro:(active:boolean)=>ipcRenderer.invoke('appearance:intro',active),whenVisible:()=>ipcRenderer.invoke('appearance:visible'),setColors:(background:string,foreground:string)=>ipcRenderer.invoke('appearance:colors',background,foreground)});

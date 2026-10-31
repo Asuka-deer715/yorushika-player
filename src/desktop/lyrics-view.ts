@@ -1,4 +1,3 @@
-import { onlineLyricsForm } from './online-lyrics-view.js';
 import type { CollectionApi, Lyrics, LyricLanguage } from '../shared/collection.js';
 export class LyricsView {
  private data:Lyrics={offset:0,tracks:{original:[],translation:[],romaji:[]}};
@@ -8,7 +7,7 @@ export class LyricsView {
  constructor(private api:CollectionApi,private report:(message:string)=>void){}
  async mount(container:HTMLElement,id:string,title:string){this.title=title;this.shown.translation=localStorage.getItem('lyrics-translation')==='true';this.shown.romaji=localStorage.getItem('lyrics-romaji')==='true';const generation=++this.generation;container.textContent='正在读取歌词…';try{const data=await this.api.lyrics(id);if(generation!==this.generation)return;this.data=data;this.render(container,id,generation);}catch(error){if(generation===this.generation){container.textContent='歌词读取失败，请重新打开播放页。';this.report((error as Error).message);}}}
  private render(container:HTMLElement,id:string,generation:number){
-  container.replaceChildren();container.append(onlineLyricsForm(this.api,id,this.title,data=>{if(generation!==this.generation)return;this.data=data;this.render(container,id,generation)}));const controls=document.createElement('div');controls.className='lyric-controls';
+  container.replaceChildren();const controls=document.createElement('div');controls.className='lyric-controls';
   const labels={original:'原文',translation:'翻译',romaji:'罗马音'};
   for(const language of ['original','translation','romaji'] as LyricLanguage[]){
    if(language!=='original'){const label=document.createElement('label');const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=this.shown[language];checkbox.onchange=()=>{this.shown[language]=checkbox.checked;localStorage.setItem('lyrics-'+language,String(checkbox.checked));this.render(container,id,generation)};label.append(checkbox,labels[language]);controls.append(label);}

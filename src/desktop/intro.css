@@ -1,0 +1,12 @@
+/* Independent SVG elements share the same clock, ending in the official mark. */
+.intro-ring,.intro-eyes,.intro-hand{transform-box:view-box;transform-origin:103.14px 69.13px}
+.intro-running:not(.intro-reduced) .intro-ring{animation:intro-ring-arrive var(--intro-duration) linear both}
+.intro-running:not(.intro-reduced) .intro-eyes{animation:intro-eyes-open var(--intro-duration) cubic-bezier(.22,1,.36,1) both}
+.intro-running:not(.intro-reduced) .intro-hand{animation:intro-clock-turn var(--intro-duration) linear both}
+.intro-running:not(.intro-reduced){animation:intro-home-reveal var(--intro-duration) linear both}
+@keyframes intro-ring-arrive{0%{opacity:0;transform:scale(.94)}12%,82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@keyframes intro-eyes-open{0%,8%{transform:scaleY(.04);opacity:0}32%,82%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+@keyframes intro-clock-turn{0%{transform:rotate(var(--start-angle));opacity:0}8%{transform:rotate(var(--start-angle));opacity:1}70%,82%{transform:rotate(0deg);opacity:1}100%{transform:rotate(0deg);opacity:0}}
+@keyframes intro-home-reveal{0%,82%{clip-path:inset(0)}100%{clip-path:inset(50% 0 50% 0)}}
+
+.intro{inset:0}

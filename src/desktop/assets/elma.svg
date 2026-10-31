@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+<title>Elma — refined bean-eye logo draft</title>
+<desc>A simple pale-haired Elma mascot with bean eyes, a tucked chin and a dark collar.</desc>
+<rect x="16" y="16" width="480" height="480" rx="144" fill="#72A6AF"/>
+<g stroke="#403E42" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+<path d="M120 222C96 113 154 59 251 59c105 0 153 61 142 169l-1 70 32 135H88l32-135Z" fill="#DBD0BE"/>
+
+<path d="M143 120c-10 84-13 128-3 163 8 31 30 48 79 61v18h74v-18c48-13 72-30 80-61 10-35 6-134-4-163Z" fill="#F9DFC8" stroke="none"/>
+<path d="M143 218v58c0 33 30 59 76 68v18m74 0v-18c46-9 77-35 77-68v-59" fill="none"/>
+<path d="M219 362h74v14l38 16 23 26 12 46H146l12-46 23-26 38-16Z" fill="#35414E"/>
+<path d="M120 222C96 113 154 59 251 59c105 0 153 61 142 169l-10 10c-43-15-95-50-124-98-26 41-66 68-111 78l-4 84c-9-18-17-42-24-80Z" fill="#DBD0BE"/>
+<path d="M365 201c9 58 3 112-20 167 30-17 45-45 47-81" fill="#DBD0BE"/>
+<path d="M148 214c-7 55-1 112 20 154-28-15-43-40-47-69" fill="#DBD0BE"/>
+</g>
+<g id="face" fill="#49383B">
+<rect x="190" y="231" width="23" height="43" rx="11.5" transform="rotate(-6 201 252)"/>
+<rect x="298" y="231" width="23" height="43" rx="11.5" transform="rotate(6 309 252)"/>
+
+
+<path d="M242 298q14 14 28 0" fill="none" stroke="#49383B" stroke-width="7" stroke-linecap="round"/>
+</g>
+</svg>

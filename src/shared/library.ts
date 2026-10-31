@@ -9,6 +9,7 @@ export interface MediaRecord {
 export interface ImportResult {
   items: MediaRecord[];
   failures: { name: string; message: string }[];
+  cache?: {found:number;converted:number};
 }
 export interface LibraryApi {
   list(): Promise<MediaRecord[]>;

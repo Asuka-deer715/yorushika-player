@@ -11,6 +11,8 @@ const destination = path.join(root, 'release', `Yorushika-${metadata.version}-wi
 if (fs.existsSync(destination)) throw new Error(`Output already exists: ${destination}`);
 fs.cpSync(path.dirname(executable), destination, { recursive: true });
 fs.renameSync(path.join(destination, 'electron.exe'), path.join(destination, 'Yorushika.exe'));
+const iconResult = spawnSync(process.execPath,[path.join(__dirname,'apply-windows-icon.cjs'),path.join(destination,'Yorushika.exe'),executable],{stdio:'inherit'});
+if(iconResult.status!==0)throw new Error('Windows icon generation failed');
 const app = path.join(destination, 'resources', 'app');
 fs.mkdirSync(app, { recursive: true });
 for (const folder of ['dist/main', 'dist/shared', 'dist/browser', 'src/main', 'src/desktop']) fs.cpSync(path.join(root, folder), path.join(app, folder), { recursive: true });

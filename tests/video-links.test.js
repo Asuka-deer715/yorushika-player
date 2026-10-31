@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const {LibraryStore}=require('../dist/main/library-store.js');
+const {CollectionStore}=require('../dist/main/collection-store.js');
+test('local video links persist, deduplicate and validate types',()=>{
+ const root=process.cwd().replaceAll('\\','/')+'/.runtime/video-link-test-'+process.pid+'.sqlite';
+ const library=new LibraryStore(root);let collection=new CollectionStore(root);
+ try{library.add('G:/fixture/song.mp3','song','audio');library.add('G:/fixture/mv.mp4','mv','mv');const [audio,video]=library.list();collection.linkVideo(audio.id,video.id);collection.linkVideo(audio.id,video.id);assert.deepEqual(collection.videos(audio.id),[video.id]);assert.throws(()=>collection.linkVideo(video.id,audio.id));collection.close();collection=new CollectionStore(root);assert.deepEqual(collection.videos(audio.id),[video.id]);collection.unlinkVideo(audio.id,video.id);assert.deepEqual(collection.videos(audio.id),[]);}finally{collection.close();library.close();require('node:fs').unlinkSync(root);}
+});

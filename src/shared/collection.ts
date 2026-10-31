@@ -3,7 +3,16 @@ export type LyricLanguage = 'original' | 'translation' | 'romaji';
 export interface LyricLine { time: number | null; text: string }
 export interface Lyrics { offset: number; tracks: Record<LyricLanguage, LyricLine[]> }
 export interface Playlist { id: string; name: string; mediaIds: string[] }
+export type LyricProvider='netease'|'qq';
+export interface PlatformCandidate {id:string;title:string;artist:string;album:string;cover:string}
 export interface CollectionApi {
+ videos(audioId:string):Promise<string[]>;
+ linkVideo(audioId:string,videoId:string):Promise<void>;
+ unlinkVideo(audioId:string,videoId:string):Promise<void>;
+ cover(mediaId:string):Promise<string>;
+ setCover(mediaId:string,url:string):Promise<void>;
+ searchPlatformLyrics(provider:LyricProvider,title:string,artist:string):Promise<PlatformCandidate[]>;
+ applyPlatformLyrics(provider:LyricProvider,mediaId:string,remoteId:string):Promise<Lyrics>;
  searchLyrics(title:string,artist:string):Promise<LyricCandidate[]>;
  applyOnlineLyrics(mediaId:string,candidateId:number):Promise<Lyrics>;
  playlists(): Promise<Playlist[]>;
