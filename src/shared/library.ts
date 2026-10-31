@@ -10,11 +10,13 @@ export interface MediaRecord {
 }
 export interface ImportResult {
   items: MediaRecord[];
+  importedIds?: string[];
   failures: { name: string; message: string }[];
   cache?: {found:number;converted:number};
 }
 export interface LibraryApi {
   list(): Promise<MediaRecord[]>;
+  rename(id:string,name:string):Promise<MediaRecord[]>;
   setVideoCategory(id:string,category:VideoCategory):Promise<MediaRecord[]>;
   importFiles(kind: MediaKind): Promise<ImportResult>;
   relink(id: string): Promise<MediaRecord[]>;

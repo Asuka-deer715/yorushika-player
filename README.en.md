@@ -25,45 +25,39 @@ The published v0.1.2 preview requires neither Node.js nor a terminal. Keep the e
 
 ## Features
 
-The following describes the current development source:
+These features describe the current development source; the published preview may differ.
 
-- **Local collection**: import audio and video, search, create playlists, and relink missing files.
-- **Playback and lyrics**: playback queue, volume and mute, previous-session restoration; LRC/TXT lyrics, translation, romanization, offsets and click-to-seek.
-- **Full player**: artwork, lyrics, and linked local MV versions. Switching media starts the selected version from the beginning.
-- **Release catalog**: browse verified band, n-buna, suis and selected collaboration releases, with missing tracks and local same-name candidates. The catalog and matching are still being developed.
-- **Personalization**: Paper, Charcoal, Rain and Cappuccino, Blue Hour and custom palettes; configurable intro and system tray.
-- **Online metadata**: NetEase, QQ Music and LRCLIB lyric search, plus online artwork association. Availability depends on the provider and network. QQ lyric retrieval has not been verified successfully in the development environment.
+<table>
+<tr>
+<td width="50%" valign="top"><h3>🎵 Organize local media</h3><p>Import and manage audio and video separately, search and rename entries, and relink moved files. Your original media stays in place.</p></td>
+<td width="50%" valign="top"><h3>📚 Explore Yorushika releases</h3><p>Browse the band, n-buna, suis and selected collaborations. Match local tracks or assign them manually; unmatched audio stays under Other. Link your own local music videos to tracks.</p></td>
+</tr>
+<tr>
+<td valign="top"><h3>📝 Make personal playlists</h3><p>Browse playlist cards, view their tracks and add the current song from the player. Rename playlists and crop a square cover. New playlists record their creation date; older ones may not have one.</p></td>
+<td valign="top"><h3>▶️ Choose how to listen</h3><p>Use the playback queue with sequential, repeat-all, repeat-one or shuffle modes. Control volume and mute, restore your last session, or keep listening with the compact player and system tray.</p></td>
+</tr>
+<tr>
+<td valign="top"><h3>💬 Follow the lyrics</h3><p>Import LRC/TXT lyrics, show original text, translations and romanization, adjust their font sizes independently, and click a line to seek. Desktop lyrics and per-version timing adjustments are available.</p></td>
+<td valign="top"><h3>🎬 Watch or just listen</h3><p>Play local MVs and live videos in split, background or fullscreen layouts. Switch to an audio-style view while the MV audio continues; linked audio and video can have separate lyric timing.</p></td>
+</tr>
+<tr>
+<td valign="top"><h3>🎨 Personalize the space</h3><p>Choose a preset or custom palette, adjust typography and entrance effects, and rotate official artwork or your own cropped images on the home page.</p></td>
+<td valign="top"><h3>🔎 Find lyrics and artwork</h3><p>Newly imported audio can be matched against NetEase lyrics and artwork; Online links also offers manual lookup and association. Ambiguous results do not automatically overwrite existing data. Availability depends on the provider and network.</p></td>
+</tr>
+</table>
 
-### Organize your collection
-
-- Manage audio and video sources separately while keeping the original media files; relink files after moving them.
-- Browse band, n-buna, suis and collaboration releases, including missing tracks and local candidates.
-- Create playlists, search your collection, and browse music videos and live performances.
-
-### Listen with lyrics and video
-
-- Open the full player, inspect the queue, and control playback, volume and mute.
-- Import original, translated and romanized lyrics, adjust their timing and click synchronized lines to seek.
-- Link local music videos to songs and watch in split or background layout; videos can use the linked song's lyrics.
-- Look up lyrics and artwork under Online links; availability and results depend on third-party services.
-
-### Make it yours
-
-- Choose a preset or custom palette, font and lyric display options in Settings.
-- Configure the intro and home-page ink animation. Choose whether closing hides the app to the tray or exits, and change that choice later in Settings.
-
-The video import action accepts ordinary files or a Bilibili download cache directory. Cache conversion uses FFmpeg to combine separate streams into a new MP4; **FFmpeg is not yet bundled with a source build**. This workflow has only been verified with an existing FFmpeg installation in the development environment. End users do not need to install `ffprobe`.
+Video import accepts ordinary files or a Bilibili download cache directory. Cache conversion requires FFmpeg, which is **not yet bundled with a source build**; the workflow has only been verified with FFmpeg available in the development environment. End users do not need to install `ffprobe`.
 
 ## Usage
 
 - **Local MV**: import audio and video, then select **MV** on the player bar. A single linked or clearly name-matched video plays directly; multiple candidates can be selected. An associated audio track's lyrics can be used when the video has none.
-- **Lyrics and artwork**: play a local track and search under Online links. Local lyric import and timing adjustment are in Settings. Online services can change or become unavailable.
+- **Lyrics and artwork**: play a local track and search under Online links. Local lyric import is in Settings; MV lyric timing can be adjusted from the player bar. Online services can change or become unavailable.
 - **Bilibili cache**: select the download directory, then an output directory. Original cache files are retained; large videos need sufficient disk space.
 - **Data location**: packaged builds default to the current user's application-data directory; development builds use `.runtime/` in the project. Relink files after moving them.
 
 ## Work in progress
 
-Album artwork and complete release data, automatic matching and manual correction, multilingual title aliases, full media codec coverage, bundled Bilibili conversion dependencies, and a signed release are not complete. Account login and private playlist synchronization are not implemented.
+Complete release data and the official MV list, matching accuracy, multilingual title aliases, full media codec coverage, bundled Bilibili conversion dependencies, and a signed release are not complete. The language selector is present, but Japanese and English interface translations are unfinished. Account login and private playlist synchronization are not implemented.
 
 ## Development
 

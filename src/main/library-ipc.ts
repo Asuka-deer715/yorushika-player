@@ -12,6 +12,7 @@ export function registerLibraryIpc(service: LibraryService, entryUrl: string): v
     }
   }
   ipcMain.handle('library:video-category',(event,id:unknown,category:unknown)=>{authorize(event);if(typeof id!=='string'||!['official','live','unclassified'].includes(category as string))throw new Error('无效的视频分类');return service.setVideoCategory(id,category as import('../shared/library').VideoCategory);});
+  ipcMain.handle('library:rename',(event,id:unknown,name:unknown)=>{authorize(event);if(typeof id!=='string'||typeof name!=='string'||!name.trim()||name.trim().length>200)throw new Error('名称需要为 1–200 个字符');return service.rename(id,name.trim());});
   ipcMain.handle('library:list', event => { authorize(event); return service.list(); });
   ipcMain.handle('library:import', async (event, kind: MediaKind) => {
     authorize(event);

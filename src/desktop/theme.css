@@ -54,3 +54,33 @@ body,.titlebar{background:var(--bg);color:var(--text)}nav button,.source-status,
 .listening:fullscreen .mv-fullscreen-exit{top:24px;right:28px}.listening:fullscreen .mv-fullscreen-play{bottom:24px;left:28px}
 
 .mv-fullscreen-timeline{display:none}.listening:fullscreen .mv-fullscreen-timeline{display:flex;position:absolute;z-index:2;left:0;right:0;bottom:0;height:76px;padding:0 205px 0 120px;align-items:center;gap:12px;color:white;font-size:12px;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .2s}.listening:fullscreen .mv-fullscreen-timeline:hover,.listening:fullscreen .mv-fullscreen-timeline:focus-within{opacity:1}.mv-fullscreen-timeline input{flex:1;min-width:0;accent-color:#fff;cursor:pointer}@media(prefers-reduced-motion:reduce){.mv-fullscreen-timeline{transition:none!important}}
+
+.catalog-art img.catalog-cover,.catalog-art img.playlist-cover{width:100%;height:100%;object-fit:cover;filter:none}.catalog-detail-cover{display:block;width:min(240px,42vw);aspect-ratio:1;object-fit:cover;border-radius:12px;margin-top:24px}.catalog-detail-cover[hidden]{display:none}
+
+.catalog-track-actions{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}.catalog-track-actions small{text-align:right}
+
+.mv-lyric-offset{display:flex;align-items:center;gap:4px;white-space:nowrap}.mv-lyric-offset[hidden]{display:none}.mv-lyric-offset button{padding:6px 9px;font-size:12px;font-variant-numeric:tabular-nums}.player:has(.mv-lyric-offset:not([hidden])){grid-template-columns:minmax(140px,1fr) minmax(180px,1.2fr) auto auto auto minmax(120px,.45fr);gap:12px}
+
+.titlebar .titlebar-action{position:absolute;top:50%;transform:translateY(-50%);-webkit-app-region:no-drag;width:38px;height:38px;display:grid;place-items:center;border-radius:9px;color:var(--muted)}.titlebar .titlebar-action:hover{background:var(--soft);color:var(--accent)}#settings{right:145px}#mini-mode{right:188px;font-size:13px}
+
+.catalog-assign{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px}.catalog-assign>span:first-child{width:100%}
+
+.video-card-play strong{height:3em;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.video-classify{margin-top:10px}
+
+.lyric-group .lyric-original{font-size:var(--lyric-font-original,22px)}.lyric-group .lyric-translation{font-size:var(--lyric-font-translation,18px)}.lyric-group .lyric-romaji{font-size:var(--lyric-font-romaji,18px)}.lyric-font-control{display:flex;align-items:center;gap:12px}.lyric-font-control output{min-width:42px;font-variant-numeric:tabular-nums}
+
+.edit-dialog{width:min(480px,calc(100vw - 40px));padding:28px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text)}.edit-dialog::backdrop{background:#0009}.edit-dialog .search{margin-top:20px}.crop-dialog canvas{display:block;width:min(300px,100%);height:auto;aspect-ratio:1;margin:12px auto;border-radius:10px}.crop-dialog label{display:flex;align-items:center;gap:12px;margin:12px 0}.crop-dialog input{flex:1}.listening:fullscreen .lyric-group .lyric-original{font-size:var(--lyric-font-original,28px)}.listening:fullscreen .lyric-group .lyric-translation{font-size:var(--lyric-font-translation,20px)}.listening:fullscreen .lyric-group .lyric-romaji{font-size:var(--lyric-font-romaji,20px)}
+
+.playlist-detail-cover{display:block;width:180px;aspect-ratio:1;object-fit:cover;border-radius:12px;background:var(--soft);padding:0}.playlist-detail-cover[src$="yorushika-official-mark.svg"]{padding:54px;filter:var(--mark-filter)}
+
+.track:has([data-rename]){grid-template-columns:32px minmax(0,1fr) 100px auto auto;gap:10px}.video-rename{margin-top:10px}
+
+.video-rename{width:36px;height:36px;padding:0;display:grid;place-items:center;font-size:20px;border-radius:9px}.mv-audio-only{background:var(--soft);position:relative}.mv-audio-only video{visibility:hidden}.mv-audio-only::after{content:"♪";position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:64px}.background-video .mv-audio-only{background:var(--bg)}
+
+.catalog-more{position:relative}.catalog-more summary{cursor:pointer;list-style:none;padding:8px 14px;border:1px solid var(--line);border-radius:20px}.catalog-more summary::-webkit-details-marker{display:none}.catalog-more-panel{position:absolute;z-index:10;right:0;top:calc(100% + 6px);min-width:230px;max-width:min(420px,80vw);padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 22px #0003}.catalog-more-panel>button,.catalog-more-video button{display:block;text-align:left;padding:8px;width:100%}.catalog-more-video{border-bottom:1px solid var(--line)}.catalog-more-panel .soft-select{margin:8px 0}
+
+.home-gallery-settings{max-width:900px;padding:30px 0;border-bottom:1px solid var(--line)}.home-gallery-list{display:flex;flex-wrap:wrap;gap:10px 20px;margin:16px 0}.home-gallery-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.home-gallery-row img{width:40px;height:40px;object-fit:cover;border-radius:5px}.home-gallery-row button{padding:5px 10px;font-size:12px}
+
+.playback-more-panel{right:210px}.player:has(.playback-more){grid-template-columns:minmax(140px,1fr) minmax(180px,1.2fr) repeat(3,auto) minmax(110px,.45fr);gap:12px}.player:has(.mv-lyric-offset:not([hidden])){grid-template-columns:minmax(140px,1fr) minmax(180px,1.2fr) repeat(4,auto) minmax(110px,.45fr)}
+
+.play-mode{position:relative;display:flex}.play-mode>button{display:grid;place-items:center}.play-mode-menu{position:absolute;z-index:30;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);min-width:150px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px #0003}.play-mode-menu[hidden]{display:none}.play-mode-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 11px;border-radius:8px;text-align:left;white-space:nowrap}.play-mode-menu button:hover,.play-mode-menu button[aria-checked=true]{background:var(--soft);color:var(--accent)}

@@ -31,6 +31,7 @@ export class LibraryStore {
   }
   videoCategory(id:string):VideoCategory {return (this.db.prepare('SELECT category FROM video_categories WHERE media_id=?').get(id)?.category as VideoCategory|undefined)??'unclassified';}
   setVideoCategory(id:string,category:VideoCategory):void {if(this.get(id).kind!=='mv')throw new Error('请选择本地视频');this.db.prepare('INSERT INTO video_categories VALUES(?,?) ON CONFLICT(media_id) DO UPDATE SET category=excluded.category').run(id,category);}
+  rename(id:string,name:string):void {this.get(id);this.db.prepare('UPDATE media SET name=? WHERE id=?').run(name,id);}
   relink(id: string, path: string): void {
     this.get(id);
     this.db.prepare('UPDATE media SET path = ? WHERE id = ?').run(path, id);

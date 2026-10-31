@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, protocol, net, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, protocol, net, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { mediaResponse } = require('./media-response.cjs');
@@ -13,6 +13,17 @@ for (const name of ['userData', 'sessionData', 'temp', 'logs', 'crashDumps']) {
   fs.mkdirSync(directory, { recursive: true });
   app.setPath(name, directory);
 }
+const hasInstanceLock = app.requestSingleInstanceLock();
+if (!hasInstanceLock) {
+  app.quit();
+} else {
+app.on('second-instance', () => {
+  const window = BrowserWindow.getAllWindows()[0];
+  if (!window) return;
+  if (window.isMinimized()) window.restore();
+  window.show();
+  window.focus();
+});
 app.commandLine.appendSwitch('disk-cache-dir', path.join(dataRoot, 'cache'));
 protocol.registerSchemesAsPrivileged([{ scheme: 'local-media', privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true } }]);
 const { CollectionStore } = require('../../dist/main/collection-store.js');
@@ -48,6 +59,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      backgroundThrottling: false,
     },
   });
 
@@ -55,6 +67,7 @@ function createWindow() {
   window.webContents.on('will-navigate', (event, url) => {
     if (url !== entryUrl) event.preventDefault();
   });
+  require('./auxiliary-windows.cjs').registerAuxiliaryWindows(window);
   closeBehavior.attach(window);
   window.once('ready-to-show', () => window.show());
   window.loadFile(entryPath);
@@ -62,6 +75,10 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  require('./catalog-cover-cache.cjs').registerCatalogCoverCache(dataRoot,entryUrl);
+  require('./home-gallery.cjs').registerHomeGallery(dataRoot,entryUrl);
+  ipcMain.handle('catalog:official-videos',event=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');return shell.openExternal('https://yorushika.com/news/9/');});
+  ipcMain.handle('catalog:open-search',(event,title,artist)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl||typeof title!=='string'||title.length>200||typeof artist!=='string'||artist.length>200)throw new Error('无效的搜索');return shell.openExternal('https://music.163.com/#/search/m/?s='+encodeURIComponent([title,artist].filter(Boolean).join(' '))+'&type=1');});
   ipcMain.handle('window:close-response',(event,mode,remember)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');closeBehavior.respond(BrowserWindow.fromWebContents(event.sender),mode,remember);});
   ipcMain.handle('window:close-behavior:get',event=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');return closeBehavior.get();});
   ipcMain.handle('window:close-behavior:set',(event,mode)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');closeBehavior.set(mode);});
@@ -113,3 +130,5 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => { playerTray?.destroy(); sourceStore?.close(); collectionStore?.close(); store?.close(); });
+
+}

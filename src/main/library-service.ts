@@ -20,6 +20,7 @@ export class LibraryService {
       return { id, name:displayMediaName(name), kind, missing, videoCategory:kind==='mv'?this.store.videoCategory(id):undefined, url: `local-media://library/${id}` };
     }));
   }
+  async rename(id:string,name:string){this.store.rename(id,name);return this.list();}
   async setVideoCategory(id:string,category:import('../shared/library').VideoCategory){this.store.setVideoCategory(id,category);return this.list();}
   private async checkFile(path: string, kind: MediaKind): Promise<string> {
     if (!extensions[kind].includes(extname(path).slice(1).toLowerCase())) throw new Error('文件扩展名与媒体类型不符');
@@ -30,6 +31,7 @@ export class LibraryService {
   }
   async importFiles(paths: string[], kind: MediaKind): Promise<ImportResult> {
     const failures: ImportResult['failures'] = [];
+    const previous=new Set(this.store.list().map(item=>item.id));
     for (const path of paths) {
       try {
         const canonical = await this.checkFile(path, kind);
@@ -38,7 +40,7 @@ export class LibraryService {
         failures.push({ name: basename(path), message: (error as Error).message });
       }
     }
-    return { items: await this.list(), failures };
+    const items=await this.list();return { items, failures, importedIds:items.filter(item=>!previous.has(item.id)).map(item=>item.id) };
   }
   async relink(id: string, path: string): Promise<MediaRecord[]> {
     const media = this.store.get(id);

@@ -7,7 +7,7 @@ export class LyricsDisplay {
  private visible=true;
  private time=0;
  constructor(private api:CollectionApi,private seek:(time:number)=>void){}
- async mount(host:HTMLElement,id:string,fallbackId?:string,findLinkedAudio=false){this.host=host;this.active=null;const generation=++this.generation;host.textContent='正在读取歌词…';try{let data=await this.api.lyrics(id);if(!Object.values(data.tracks).some(lines=>lines.length)){const linked=fallbackId??(findLinkedAudio?await this.api.audioForVideo(id):null);if(linked)data=await this.api.lyrics(linked);}if(generation!==this.generation)return;this.data=data;this.render();}catch{if(generation===this.generation)host.textContent='歌词读取失败，请在设置中重试。';}}
+ async mount(host:HTMLElement,id:string,fallbackId?:string,findLinkedAudio=false){this.host=host;this.active=null;const generation=++this.generation;host.textContent='正在读取歌词…';try{let data=await this.api.lyrics(id);if(!Object.values(data.tracks).some(lines=>lines.length)){const linked=fallbackId??(findLinkedAudio?await this.api.audioForVideo(id):null);if(linked){const offset=data.offset;const source=await this.api.lyrics(linked);data={...source,offset};}}if(generation!==this.generation)return;this.data=data;this.render();}catch{if(generation===this.generation)host.textContent='歌词读取失败，请在设置中重试。';}}
  private render(preservePosition=false){
   const host=this.host!;
   const previous=preservePosition?host.querySelector<HTMLElement>('.reading-lyrics'):null;
@@ -36,5 +36,6 @@ export class LyricsDisplay {
   }
   this.update(this.time);
  }
+ setOffset(offset:number){this.data.offset=offset;if(this.host?.isConnected)this.render(true);}
  update(time:number){this.time=time;if(!this.host?.isConnected)return;const rows=[...this.host.querySelectorAll<HTMLElement>('.lyric-group')];const active=rows.filter(row=>Number(row.dataset.time)<=time-this.data.offset/1000).at(-1);for(const row of rows){row.classList.toggle('active',row===active);row.classList.toggle('played',!!active&&Number(row.dataset.time)<Number(active.dataset.time));}const stamp=active?Number(active.dataset.time):null;if(active&&stamp!==this.active&&this.visible){const viewport=this.host.querySelector<HTMLElement>('.reading-lyrics')!;viewport.scrollTop+=active.getBoundingClientRect().top-viewport.getBoundingClientRect().top-viewport.clientHeight/2+active.clientHeight/2;}this.active=stamp;}
 }
