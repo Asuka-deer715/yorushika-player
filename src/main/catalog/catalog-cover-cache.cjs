@@ -1,6 +1,6 @@
 const {ipcMain,net}=require('electron');
 const fs=require('node:fs/promises');const path=require('node:path');const crypto=require('node:crypto');
-const hosts=new Set(['p1.music.126.net','p2.music.126.net','p3.music.126.net','p4.music.126.net','s3-aop.plusmember.jp']);
+const hosts=new Set(['p1.music.126.net','p2.music.126.net','p3.music.126.net','p4.music.126.net','s3-aop.plusmember.jp','aop-emtg-jp.s3-ap-northeast-1.amazonaws.com','www.lawson.co.jp']);
 function registerCatalogCoverCache(root,entryUrl){
  const directory=path.join(root,'catalog-covers');
  const auth=e=>{if(e.senderFrame!==e.sender.mainFrame||e.senderFrame.url!==entryUrl)throw Error('不允许的调用来源');};

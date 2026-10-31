@@ -10,3 +10,4 @@
 @keyframes intro-home-reveal{0%,82%{clip-path:inset(0)}100%{clip-path:inset(50% 0 50% 0)}}
 
 .intro{inset:0}
+.intro-header-cover{position:fixed;z-index:1001;top:0;left:0;right:0;height:58px;background:#17242c;pointer-events:none}

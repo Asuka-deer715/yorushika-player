@@ -9,7 +9,9 @@ const build = spawnSync(process.execPath, [path.join(__dirname, 'build.cjs')], {
 if (build.status !== 0) process.exit(build.status || 1);
 const ffmpeg = process.env.YORUSHIKA_FFMPEG;
 if (!ffmpeg || !path.isAbsolute(ffmpeg) || !fs.existsSync(ffmpeg)) throw new Error('请通过 YORUSHIKA_FFMPEG 指定现有 ffmpeg.exe 的绝对路径');
-const destination = path.join(root, 'release', `Yorushika-${metadata.version}-win-x64`);
+const suffix = process.env.YORUSHIKA_RELEASE_SUFFIX || '';
+if (suffix && !/^[a-zA-Z0-9.-]+$/.test(suffix)) throw new Error('Invalid release suffix');
+const destination = path.join(root, 'release', `Yorushika-${metadata.version}${suffix ? '-' + suffix : ''}-win-x64`);
 if (fs.existsSync(destination)) throw new Error(`Output already exists: ${destination}`);
 fs.cpSync(path.dirname(executable), destination, { recursive: true });
 fs.renameSync(path.join(destination, 'electron.exe'), path.join(destination, 'Yorushika.exe'));
@@ -17,7 +19,7 @@ const iconResult = spawnSync(process.execPath,[path.join(__dirname,'apply-window
 if(iconResult.status!==0)throw new Error('Windows icon generation failed');
 const app = path.join(destination, 'resources', 'app');
 fs.mkdirSync(app, { recursive: true });
-for (const folder of ['dist/main', 'dist/shared', 'dist/browser', 'src/main', 'src/desktop']) fs.cpSync(path.join(root, folder), path.join(app, folder), { recursive: true });
+for (const folder of ['dist/main', 'dist/shared', 'dist/desktop/catalog', 'dist/browser', 'src/main', 'src/desktop']) fs.cpSync(path.join(root, folder), path.join(app, folder), { recursive: true });
 const ffmpegDir = path.join(destination, 'resources', 'ffmpeg');
 fs.mkdirSync(ffmpegDir, { recursive: true });
 fs.copyFileSync(ffmpeg, path.join(ffmpegDir, 'ffmpeg.exe'));

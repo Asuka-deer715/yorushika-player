@@ -34,9 +34,13 @@ export class LibraryStore {
   rename(id:string,name:string):void {this.get(id);this.db.prepare('UPDATE media SET name=? WHERE id=?').run(name,id);}
   removeVideo(id:string):void {
     if(this.get(id).kind!=='mv')throw new Error('请选择本地视频');
+    this.removeMedia(id);
+  }
+  removeMedia(id:string):void {
+    this.get(id);
     this.db.exec('BEGIN');
     try {
-      for(const [table,column] of [['media_video_links','video_id'],['catalog_videos','video_id'],['media_covers','media_id'],['playlist_entries','media_id'],['lyric_tracks','media_id'],['lyric_offsets','media_id'],['catalog_assignments','media_id']]){
+      for(const [table,column] of [['media_video_links','video_id'],['media_video_links','audio_id'],['catalog_videos','video_id'],['media_covers','media_id'],['playlist_entries','media_id'],['lyric_tracks','media_id'],['lyric_offsets','media_id'],['catalog_assignments','media_id']]){
         if(this.db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(table))this.db.prepare(`DELETE FROM ${table} WHERE ${column}=?`).run(id);
       }
       this.db.prepare('DELETE FROM media WHERE id=?').run(id);

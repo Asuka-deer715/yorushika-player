@@ -11,7 +11,7 @@ export class VideoSubtitles {
  private overlay:SubtitleOverlayPlayer;private selection=0;private preparing=false;private jobId='';private progress:number|null=null;
  constructor(private player:Player,private library:LibraryApi,private report:(message:string)=>void){
   this.overlay=new SubtitleOverlayPlayer(player.video);
-  library.onSubtitleProgress(event=>{if(!this.preparing||event.jobId!==this.jobId)return;this.progress=event.duration&&event.duration>0?Math.min(99,Math.max(0,Math.floor(event.seconds/event.duration*100))):null;this.updateProgress();});
+  library.onSubtitleProgress(event=>{if(!this.preparing||event.jobId!==this.jobId)return;this.progress=event.duration&&event.duration>0?Math.min(99.9,Math.max(0,Math.floor(event.seconds/event.duration*1000)/10)):null;this.updateProgress();});
   player.addEventListener('change',()=>{const id=player.current?.kind==='mv'?player.current.id:'';if(id!==this.id)void this.load(id);});
  }
  mount(host:HTMLElement){this.host=host;this.overlay.attach();this.render();}

@@ -1,16 +1,20 @@
 import {t} from '../localization/i18n.js';
+let introActive=false;
 export async function playIntro(force=false){
- if(document.querySelector('.intro')||(!force&&localStorage.getItem('desktop-intro')==='false'))return;
+ if(introActive||document.querySelector('.intro')||(!force&&localStorage.getItem('desktop-intro')==='false'))return;
+ introActive=true;
  const selected=localStorage.getItem('desktop-intro-seconds');
  const duration=(selected==='1'?1:selected==='2'?2:1.5)*1000;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const overlay=document.createElement('div');overlay.className='intro';overlay.style.setProperty('--intro-duration',duration+'ms');overlay.classList.toggle('intro-reduced',reduced);overlay.setAttribute('aria-label',t('夜鹿启动动画'));
+ const headerCover=document.createElement('div');headerCover.className='intro-header-cover';headerCover.setAttribute('aria-hidden','true');
  const skip=document.createElement('button');skip.className='intro-skip';skip.textContent=t('跳过');overlay.append(skip);document.body.append(overlay);
  const prior=document.activeElement as HTMLElement|null;
  const surfaces=Array.from(document.body.children).filter(el=>el!==overlay&&el instanceof HTMLElement) as HTMLElement[];
  const previous=surfaces.map(el=>el.inert);surfaces.forEach(el=>el.inert=true);
- let closed=false;const close=()=>{if(closed)return;closed=true;void window.appearance.setIntro(false);overlay.dispatchEvent(new Event('intro-close'));overlay.remove();surfaces.forEach((el,i)=>el.inert=previous[i]);document.removeEventListener('keydown',escape);prior?.focus();};
- const escape=(event:KeyboardEvent)=>{if(event.key==='Escape')close();};document.addEventListener('keydown',escape);skip.onclick=close;skip.focus();
+ document.body.append(headerCover);
+ let closed=false;let closing:Promise<void>|undefined;const close=()=>closing??=(async()=>{closed=true;overlay.dispatchEvent(new Event('intro-close'));document.removeEventListener('keydown',escape);overlay.remove();surfaces.forEach((el,i)=>el.inert=previous[i]);prior?.focus();try{await window.appearance.setIntro(false);}finally{headerCover.remove();introActive=false;}})();
+ const escape=(event:KeyboardEvent)=>{if(event.key==='Escape')void close();};document.addEventListener('keydown',escape);skip.onclick=()=>void close();skip.focus();
  try{
   await window.appearance.setIntro(true);if(closed)return;
   const response=await fetch('../renderer/yorushika-official-mark.svg');if(!response.ok)throw new Error('启动标志加载失败');
@@ -31,5 +35,5 @@ export async function playIntro(force=false){
    const timer=setTimeout(resolve,duration);
    overlay.addEventListener('intro-close',()=>{clearTimeout(timer);resolve();},{once:true});
   });
- }catch(error){console.error('启动动画未完成',error);}finally{close();}
+ }catch(error){console.error('启动动画未完成',error);}finally{await close();}
 }

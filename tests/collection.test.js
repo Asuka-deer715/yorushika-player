@@ -7,6 +7,10 @@ const require=createRequire(import.meta.url);
 const {LibraryStore}=require('../dist/main/library/library-store.js');
 const {CollectionStore}=require('../dist/main/collection/collection-store.js');
 const {parseLyrics}=require('../dist/shared/collection.js');
+test('playlist descriptions persist independently and can be cleared',()=>{
+ const root=resolve('.runtime/tests');mkdirSync(root,{recursive:true});const dir=mkdtempSync(join(root,'playlist-description-'));const file=join(dir,'library.sqlite');const library=new LibraryStore(file);let store=new CollectionStore(file);
+ try{const a=store.create('a')[0],b=store.create('b')[1];assert.equal(a.description,'');store.setPlaylistDescription(a.id,'第一行\n第二行');store.close();store=new CollectionStore(file);assert.equal(store.playlists()[0].description,'第一行\n第二行');assert.equal(store.playlists()[1].description,'');store.setPlaylistDescription(a.id,'');assert.equal(store.playlists()[0].description,'');assert.throws(()=>store.setPlaylistDescription('missing','x'));}finally{store.close();library.close();rmSync(dir,{recursive:true});}
+});
 test('歌单手动顺序独立保存，并保留加入先后',()=>{
  const root=resolve('.runtime/tests');mkdirSync(root,{recursive:true});const dir=mkdtempSync(join(root,'playlist-order-'));const file=join(dir,'library.sqlite');const library=new LibraryStore(file);let store=new CollectionStore(file);
  try{

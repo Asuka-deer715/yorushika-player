@@ -46,7 +46,9 @@ These features describe the current development source; the published preview ma
 </tr>
 </table>
 
-A draggable story timeline connects releases, dates, official sources and fan interpretations. The interface offers Chinese, Japanese and English, and the onboarding guide can be reopened from Settings. Public NetEase songs can be tried in the embedded platform player; availability remains subject to the provider.
+A draggable story timeline connects releases, dates and story details, with animations revealed during browsing and an option to skip them. The gallery separates official covers, collaborations, exhibitions, personal collections and fan art; personal images stay on the device. The interface offers Chinese, Japanese and English, and the onboarding guide can be reopened from Settings.
+
+NetEase songs currently use an embedded platform player, subject to provider availability. Account login, direct streaming and integration with the main playback queue are still in development and are not yet available.
 
 Video import accepts ordinary files or a Bilibili download cache directory. Bilibili cache conversion and embedded image/styled subtitles use FFmpeg. The current packaging script bundles a developer-provided FFmpeg executable; older published previews may not include it. End users do not need to install `ffprobe`.
 
@@ -56,6 +58,8 @@ Video import accepts ordinary files or a Bilibili download cache directory. Bili
 - **Lyrics and artwork**: play a local track and search under Online links. Local lyric import is in Settings; MV lyric timing can be adjusted from the player bar. Online services can change or become unavailable.
 - **Bilibili cache**: select the download directory, then an output directory. Original cache files are retained; large videos need sufficient disk space.
 - **Embedded subtitles**: select a track on the player screen. Image and ASS/SSA subtitles are cached on first preparation; time depends on video duration, resolution and hardware. The original video is not modified. Special ASS fonts may differ if they are not available locally.
+- **Desktop lyrics**: use the lyrics button in the playback bar to show or hide the transparent window; its appearance controls offer horizontal and vertical layouts.
+- **Gallery**: add images under your collection or fan art. Official images require a network connection on first viewing and are cached locally after retrieval.
 - **Data location**: packaged builds default to the current user's application-data directory; development builds use `.runtime/` in the project. Relink files after moving them.
 
 ## Work in progress

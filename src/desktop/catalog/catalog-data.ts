@@ -1,5 +1,6 @@
 export type Category='band'|'nbuna'|'suis'|'collab-n'|'collab-s';
-export interface Release {id:string;name:string;date:string;category:Category;tracks:string[];source:string;credit?:string}
+import {collaborationReleases} from './collaboration-releases.js';
+export interface Release {id:string;name:string;date:string;category:Category;tracks:string[];source:string;credit?:string;artist?:string;album?:string}
 const official='https://yorushika.com/discography/detail/';
 function release(id:string,name:string,date:string,category:Category,tracks:string):Release{return {id,name,date,category,tracks:tracks.split('|').filter(Boolean),source:official+id+'/'};}
 export const releases:Release[]=[
@@ -22,6 +23,6 @@ const verifiedCollaborations:Release[]=[
  {id:'collab-n-eien',name:'永遠はきらい',date:'2019-07-10',category:'collab-n',tracks:['永遠はきらい'],credit:'上白石萌音 · 作曲、编曲',source:'https://yorushika.com/news/detail/10598'},
  {id:'collab-n-unravel',name:'unravel (n-buna from ヨルシカ Remix Exhibition edit)',date:'2021-02-10',category:'collab-n',tracks:['unravel (n-buna from ヨルシカ Remix Exhibition edit)'],credit:'TK from 凛として時雨 · Remix',source:'https://yorushika.com/news/detail/11242'}
 ];
-releases.push(...verifiedCollaborations);
+releases.push(...verifiedCollaborations,...collaborationReleases);
 for(const [name,date,category] of singles)releases.push({id:`${category}-${name}`,name,date,category,tracks:[name],source:'https://yorushika.com/discography/'});
 export function normalize(value:string){return value.normalize('NFKC').trim().toLocaleLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');}

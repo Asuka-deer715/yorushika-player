@@ -8,7 +8,7 @@ export function installAuxiliarySync(player:Player,api:CollectionApi,origin:()=>
  window.addEventListener('lyrics-offset-changed',()=>void load());window.addEventListener('lyrics-updated',()=>void load());window.addEventListener('cover-changed',()=>void load());
  new MutationObserver(publish).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
  window.auxWindows.onRequest(publish);window.auxWindows.onAction(action=>{if(action==='toggle')player.toggle();else if(action==='previous')player.next(-1);else if(action==='next')player.next(1);else if((action==='earlier'||action==='later')&&player.current){const current=player.current;const offset=Math.max(-600000,Math.min(600000,data.offset+(action==='earlier'?-500:500)));void api.setOffset(current.id,offset).then(()=>{if(player.current?.id===current.id){data.offset=offset;window.dispatchEvent(new Event('lyrics-offset-changed'));publish();}});}});
- window.auxWindows.onClosed(kind=>{if(kind==='lyrics'){localStorage.setItem('desktop-lyrics','false');const input=document.querySelector<HTMLInputElement>('.lyrics-settings .setting input[type="checkbox"]');if(input)input.checked=false;}});
+ window.auxWindows.onClosed(kind=>{if(kind==='lyrics'){localStorage.setItem('desktop-lyrics','false');window.dispatchEvent(new Event('desktop-lyrics-changed'));}});
  if(localStorage.getItem('desktop-lyrics')==='true')void window.auxWindows.open('lyrics');
  id=player.current?.id??'';void load();
 }

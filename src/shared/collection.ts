@@ -2,9 +2,9 @@ export interface LyricCandidate { id:number; title:string; artist:string; album:
 export type LyricLanguage = 'original' | 'translation' | 'romaji';
 export interface LyricLine { time: number | null; text: string }
 export interface Lyrics { offset: number; tracks: Record<LyricLanguage, LyricLine[]> }
-export interface Playlist { id: string; name: string; mediaIds: string[]; addedMediaIds:string[]; createdAt:string|null; cover:string }
+export interface Playlist { id: string; name: string; mediaIds: string[]; addedMediaIds:string[]; createdAt:string|null; cover:string; description:string }
 export type LyricProvider='netease'|'qq';
-export interface PlatformCandidate {id:string;title:string;artist:string;album:string;cover:string}
+export interface PlatformCandidate {id:string;title:string;artist:string;album:string;cover:string;aliases?:string[]}
 export interface CatalogAssignment {mediaId:string;releaseId:string;track:string}
 export interface CatalogVideo {releaseId:string;track:string;videoId:string}
 export interface CollectionApi {
@@ -26,6 +26,7 @@ export interface CollectionApi {
  searchLyrics(title:string,artist:string):Promise<LyricCandidate[]>;
  applyOnlineLyrics(mediaId:string,candidateId:number):Promise<Lyrics>;
  renamePlaylist(id:string,name:string):Promise<Playlist[]>;
+ setPlaylistDescription(id:string,description:string):Promise<Playlist[]>;
  setPlaylistCover(id:string,cover:string):Promise<Playlist[]>;
  playlists(): Promise<Playlist[]>;
  createPlaylist(name: string): Promise<Playlist[]>;

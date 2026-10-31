@@ -8,6 +8,19 @@ const { LibraryStore } = require('../dist/main/library/library-store.js');
 const { LibraryService } = require('../dist/main/library/library-service.js');
 const { CollectionStore } = require('../dist/main/collection/collection-store.js');
 
+test('扫描音乐文件夹及子文件夹，重复导入时跳过已有歌曲', async () => {
+  const root = resolve('.runtime/tests');await mkdir(root,{recursive:true});
+  const directory = await mkdtemp(join(root,'audio-folder-'));const music=join(directory,'music');const nested=join(music,'album');await mkdir(nested,{recursive:true});
+  const first=join(music,'song.MP3'),second=join(nested,'track.flac');await writeFile(first,'a');await writeFile(second,'b');await writeFile(join(nested,'note.txt'),'not audio');
+  const store=new LibraryStore(join(directory,'library.sqlite'));
+  try{
+    const service=new LibraryService(store);const result=await service.importAudioFolder(music);
+    assert.deepEqual(result.scan,{found:2,duplicates:0});assert.equal(result.importedIds.length,2);assert.equal(result.failures.length,0);
+    const again=await service.importAudioFolder(music);assert.deepEqual(again.scan,{found:2,duplicates:2});assert.equal(again.importedIds.length,0);
+    assert.equal(await readFile(first,'utf8'),'a');assert.equal(await readFile(second,'utf8'),'b');
+  }finally{store.close();await rm(directory,{recursive:true});}
+});
+
 test('移除视频清理关联并保留原始文件', async () => {
   const root = resolve('.runtime/tests');
   await mkdir(root, { recursive: true });

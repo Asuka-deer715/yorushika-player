@@ -71,13 +71,14 @@ function createWindow() {
   closeBehavior.attach(window);
   window.once('ready-to-show', () => window.show());
   window.loadFile(entryPath);
-  playerTray=new PlayerTray(path.join(__dirname,'../desktop/assets/elma.ico'),window,()=>app.quit());
+  playerTray=new PlayerTray(path.join(__dirname,'../desktop/assets/elma.ico'),window,()=>app.quit(),()=>{app.relaunch();app.quit();});
 }
 
 app.whenReady().then(() => {
   require('./catalog/catalog-cover-cache.cjs').registerCatalogCoverCache(dataRoot,entryUrl);
   require('./home/home-gallery.cjs').registerHomeGallery(dataRoot,entryUrl);
-  ipcMain.handle('story:source',(event,url)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl||!['https://store-annex.universal-music.co.jp/product/dued1266/','https://www.universal-music.co.jp/yorushika/news/2019-08-27/','https://yorushika.com/news/detail/11127','https://sp.universal-music.co.jp/yorushika/sousaku/','https://music.fanplus.co.jp/news/20190413321e430f7','https://sp.universal-music.co.jp/yorushika/elma/','https://note.com/tsukiyoi_/n/nc9fd5c005ef7','https://note.com/anji_oto/n/n56fd1efd6b10'].includes(url))throw new Error('无效的资料来源');return shell.openExternal(url);});
+  ipcMain.handle('story:source',(event,url)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl||!['https://www.lawson.co.jp/lab/tsuushin/art/1464247_4659.html','https://yorushika.com/news/detail/11644','https://yorushika.com/feature/exhibition_sun','https://yorushika.com/news/detail/11312','https://yorushika.com/news/detail/11499','https://yorushika.com/news/detail/11519','https://tablet.wacom.co.jp/article/drawing-with-wacom124','https://www.universal-music.co.jp/yorushika/products/upzz-1852/','https://store-annex.universal-music.co.jp/product/dued1266/','https://www.universal-music.co.jp/yorushika/news/2019-08-27/','https://yorushika.com/news/detail/11127','https://sp.universal-music.co.jp/yorushika/sousaku/','https://music.fanplus.co.jp/news/20190413321e430f7','https://sp.universal-music.co.jp/yorushika/elma/'].includes(url))throw new Error('无效的资料来源');return shell.openExternal(url);});
+  require('./story/story-details.cjs').registerStoryDetails(dataRoot,entryUrl,app.isPackaged);
   ipcMain.handle('catalog:official-videos',event=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');return shell.openExternal('https://yorushika.com/news/9/');});
   ipcMain.handle('catalog:open-search',(event,title,artist)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl||typeof title!=='string'||title.length>200||typeof artist!=='string'||artist.length>200)throw new Error('无效的搜索');return shell.openExternal('https://music.163.com/#/search/m/?s='+encodeURIComponent([title,artist].filter(Boolean).join(' '))+'&type=1');});
   ipcMain.handle('window:close-response',(event,mode,remember)=>{if(event.senderFrame!==event.sender.mainFrame||event.senderFrame.url!==entryUrl)throw new Error('不允许的调用来源');closeBehavior.respond(BrowserWindow.fromWebContents(event.sender),mode,remember);});

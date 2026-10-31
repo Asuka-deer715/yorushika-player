@@ -16,6 +16,6 @@ function registerAuxiliaryWindows(mainWindow){
  ipcMain.handle('aux:close',(e,kind)=>{mainOnly(e);if(!['mini','lyrics'].includes(kind))throw Error('无效的窗口类型');windows[kind]?.close();});
  ipcMain.handle('aux:unlock-lyrics',e=>{mainOnly(e);if(windows.lyrics&&!windows.lyrics.isDestroyed())windows.lyrics.setIgnoreMouseEvents(false);});
  ipcMain.on('aux:publish',(e,value)=>{mainOnly(e);if(!value||typeof value!=='object')return;state=value;publish();});
- ipcMain.on('aux:action',(e,action)=>{const win=auxiliary(e);if(!win||!['previous','toggle','next','restore','close','earlier','later','lock'].includes(action))return;if(action==='lock'){if(win===windows.lyrics)win.setIgnoreMouseEvents(true,{forward:true});return;}if(action==='close'||action==='restore'){win.close();return;}mainWindow.webContents.send('aux:action',action);});
+ ipcMain.on('aux:action',(e,action)=>{const win=auxiliary(e);if(!win||!['previous','toggle','next','restore','close','earlier','later','lock','vertical','horizontal'].includes(action))return;if((action==='vertical'||action==='horizontal')&&win===windows.lyrics){win.setMinimumSize(action==='vertical'?180:360,100);win.setSize(action==='vertical'?300:760,action==='vertical'?560:130);return;}if(action==='lock'){if(win===windows.lyrics)win.setIgnoreMouseEvents(true,{forward:true});return;}if(action==='close'||action==='restore'){win.close();return;}mainWindow.webContents.send('aux:action',action);});
 }
 module.exports={registerAuxiliaryWindows};

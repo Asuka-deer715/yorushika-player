@@ -14,12 +14,15 @@
     "package:win": "node scripts/package.cjs"
   },
   "devDependencies": {
-    "electron": "44.7.0",
-    "typescript": "6.0.3",
     "@types/node": "^24.0.0",
-    "resedit": "2.0.3"
+    "electron": "44.7.0",
+    "resedit": "2.0.3",
+    "typescript": "6.0.3"
   },
   "engines": {
     "node": ">=24"
+  },
+  "dependencies": {
+    "@neteasecloudmusicapienhanced/api": "^4.41.1"
   }
 }

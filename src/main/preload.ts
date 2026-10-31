@@ -5,13 +5,15 @@ const library: LibraryApi = {
   list: () => ipcRenderer.invoke('library:list'),
   rename:(id,name)=>ipcRenderer.invoke('library:rename',id,name),
   removeVideo:id=>ipcRenderer.invoke('library:remove-video',id),
+  removeMedia:id=>ipcRenderer.invoke('library:remove-media',id),
   subtitleTracks:id=>ipcRenderer.invoke('library:subtitle-tracks',id),
   subtitleText:(id,index)=>ipcRenderer.invoke('library:subtitle-text',id,index),
   subtitleOverlay:(id,index,jobId)=>ipcRenderer.invoke('subtitle-overlay:prepare',id,index,jobId),
   cancelSubtitleOverlay:()=>ipcRenderer.invoke('subtitle-overlay:cancel'),
   onSubtitleProgress:handler=>{const listener:Parameters<typeof ipcRenderer.on>[1]=(_event,progress)=>handler(progress);ipcRenderer.on('subtitle-overlay:progress',listener);return ()=>ipcRenderer.removeListener('subtitle-overlay:progress',listener);},
   setVideoCategory:(id,category)=>ipcRenderer.invoke('library:video-category',id,category),
-  importFiles: kind => ipcRenderer.invoke('library:import', kind),
+  importFiles: (kind,prefix) => ipcRenderer.invoke('library:import', kind,prefix),
+  importAudioFolder:prefix=>ipcRenderer.invoke('library:import-audio-folder',prefix),
   relink: id => ipcRenderer.invoke('library:relink', id),
 };
 contextBridge.exposeInMainWorld('library', library);
@@ -29,6 +31,7 @@ const collection: CollectionApi = {
  searchLyrics:(title,artist)=>ipcRenderer.invoke('lyrics:search',title,artist),
  applyOnlineLyrics:(id,candidate)=>ipcRenderer.invoke('lyrics:apply-online',id,candidate),
  renamePlaylist:(id,name)=>ipcRenderer.invoke('collection:rename',id,name),setPlaylistCover:(id,cover)=>ipcRenderer.invoke('collection:cover',id,cover),reorderPlaylist:(id,mediaIds)=>ipcRenderer.invoke('collection:reorder',id,mediaIds),
+ setPlaylistDescription:(id,description)=>ipcRenderer.invoke('collection:description',id,description),
  playlists:()=>ipcRenderer.invoke('collection:list'),createPlaylist:name=>ipcRenderer.invoke('collection:create',name),
  addToPlaylist:(id,items)=>ipcRenderer.invoke('collection:add',id,items),removeFromPlaylist:(id,items)=>ipcRenderer.invoke('collection:remove',id,items),
  lyrics:id=>ipcRenderer.invoke('lyrics:get',id),importLyrics:(id,language)=>ipcRenderer.invoke('lyrics:import',id,language),setOffset:(id,offset)=>ipcRenderer.invoke('lyrics:offset',id,offset),
@@ -53,4 +56,4 @@ contextBridge.exposeInMainWorld('catalogCoverCache',{get:(id:string)=>ipcRendere
 
 contextBridge.exposeInMainWorld('homeGallery',{get:()=>ipcRenderer.invoke('home-gallery:get'),set:(state:unknown)=>ipcRenderer.invoke('home-gallery:set',state)});
 
-contextBridge.exposeInMainWorld('storySources',{open:(url:string)=>ipcRenderer.invoke('story:source',url)});
+contextBridge.exposeInMainWorld('storySources',{open:(url:string)=>ipcRenderer.invoke('story:source',url),details:()=>ipcRenderer.invoke('story:details')});

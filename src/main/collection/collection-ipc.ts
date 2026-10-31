@@ -27,6 +27,7 @@ export function registerCollectionIpc(store:CollectionStore,entryUrl:string){
  ipcMain.handle('cover:get',(e,media)=>{auth(e);return store.cover(id(media));});
  ipcMain.handle('cover:set',(e,media,url)=>{auth(e);if(typeof url!=='string'||url.length>2048)throw new Error('无效的封面链接');const parsed=new URL(url);if(!['http:','https:'].includes(parsed.protocol)||!['p1.music.126.net','p2.music.126.net','p3.music.126.net','p4.music.126.net','y.gtimg.cn'].includes(parsed.hostname)||parsed.username||parsed.password||parsed.port)throw new Error('不支持的封面来源');parsed.protocol='https:';store.setCover(id(media),parsed.href);});
  ipcMain.handle('collection:rename',(e,p,name)=>{auth(e);if(typeof name!=='string'||!name.trim()||name.trim().length>80)throw new Error('歌单名称需要为 1–80 个字符');return store.renamePlaylist(id(p),name.trim());});
+ ipcMain.handle('collection:description',(e,p,description)=>{auth(e);if(typeof description!=='string'||description.length>2000)throw new Error('歌单介绍不能超过 2000 个字符');return store.setPlaylistDescription(id(p),description.trim());});
  ipcMain.handle('collection:cover',(e,p,cover)=>{auth(e);if(typeof cover!=='string'||cover.length>1400000||!/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(cover))throw new Error('无效的歌单封面');return store.setPlaylistCover(id(p),cover);});
  ipcMain.handle('collection:auto-metadata',(e,media)=>{auth(e);return autoMetadata.run(id(media));});
  ipcMain.handle('collection:list',e=>{auth(e);return store.playlists();});

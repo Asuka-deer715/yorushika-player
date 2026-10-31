@@ -1,6 +1,6 @@
 const {Tray,Menu}=require('electron');
 class PlayerTray {
- constructor(icon,window,quit){
+ constructor(icon,window,quit,restart){
   this.tray=new Tray(icon);
   this.tray.setToolTip('Yorushika Player');
   const show=()=>{if(window.isMinimized())window.restore();window.show();window.focus();};
@@ -9,6 +9,7 @@ class PlayerTray {
    {label:'显示播放器',click:show},
    {label:'隐藏到托盘',click:()=>window.hide()},
    {type:'separator'},
+   {label:'重启播放器',click:restart},
    {label:'退出播放器',click:quit}
   ]));
   window.once('closed',()=>this.destroy());

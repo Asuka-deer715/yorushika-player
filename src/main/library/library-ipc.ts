@@ -15,11 +15,19 @@ export function registerLibraryIpc(service: LibraryService, entryUrl: string): v
   ipcMain.handle('library:video-category',(event,id:unknown,category:unknown)=>{authorize(event);if(typeof id!=='string'||!['official','live','unclassified'].includes(category as string))throw new Error('无效的视频分类');return service.setVideoCategory(id,category as import('../../shared/library').VideoCategory);});
   ipcMain.handle('library:rename',(event,id:unknown,name:unknown)=>{authorize(event);if(typeof id!=='string'||typeof name!=='string'||!name.trim()||name.trim().length>200)throw new Error('名称需要为 1–200 个字符');return service.rename(id,name.trim());});
   ipcMain.handle('library:remove-video',(event,id:unknown)=>{authorize(event);if(typeof id!=='string')throw new Error('无效的视频编号');return service.removeVideo(id);});
+  ipcMain.handle('library:remove-media',(event,id:unknown)=>{authorize(event);if(typeof id!=='string')throw new Error('无效的媒体编号');return service.removeMedia(id);});
   const subtitleBinary=()=>app.isPackaged?join(process.resourcesPath,'ffmpeg','ffmpeg.exe'):(process.env.YORUSHIKA_FFMPEG||'ffmpeg');
   ipcMain.handle('library:subtitle-tracks',(event,id:unknown)=>{authorize(event);if(typeof id!=='string')throw new Error('无效的视频编号');return probeSubtitles(subtitleBinary(),service.videoPath(id));});
   ipcMain.handle('library:subtitle-text',(event,id:unknown,index:unknown)=>{authorize(event);if(typeof id!=='string'||!Number.isSafeInteger(index)||(index as number)<0)throw new Error('无效的字幕轨道');return extractSubtitle(subtitleBinary(),service.videoPath(id),index as number);});
   ipcMain.handle('library:list', event => { authorize(event); return service.list(); });
-  ipcMain.handle('library:import', async (event, kind: MediaKind) => {
+  const validPrefix=(prefix:unknown)=>{if(typeof prefix!=='string'||prefix.length>80||/[\r\n]/.test(prefix))throw new Error('无效的歌曲前缀');return prefix.trim();};
+  ipcMain.handle('library:import-audio-folder',async (event,prefix:unknown)=>{
+    authorize(event);
+    const namePrefix=validPrefix(prefix);
+    const selection=await dialog.showOpenDialog({title:'选择音乐文件夹',properties:['openDirectory']});
+    return selection.canceled?null:service.importAudioFolder(selection.filePaths[0],namePrefix);
+  });
+  ipcMain.handle('library:import', async (event, kind: MediaKind,prefix:unknown) => {
     authorize(event);
     if (kind !== 'audio' && kind !== 'mv') throw new Error('无效的媒体类型');
     if(kind==='mv'){
@@ -38,7 +46,7 @@ export function registerLibraryIpc(service: LibraryService, entryUrl: string): v
     }
     const selection = await dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'],
       filters: [{ name: kind === 'audio' ? '音频' : '视频', extensions: extensions[kind] }] });
-    return service.importFiles(selection.filePaths, kind);
+    return service.importFiles(selection.filePaths, kind,kind==='audio'?validPrefix(prefix):'');
   });
   ipcMain.handle('library:relink', async (event, id: string) => {
     authorize(event);

@@ -2,7 +2,7 @@ export interface Palette { id:string; name:string; bg:string; surface:string; te
 export const presets:Palette[]=[
  {id:'paper',name:'暖白 · Paper',bg:'#f5f5f1',surface:'#ffffff',text:'#202c35',muted:'#65717b',accent:'#356d8b',line:'#dedfd9'},
  {id:'charcoal',name:'柔黑 · Charcoal',bg:'#1c1d20',surface:'#26282c',text:'#eeeae3',muted:'#b1b0ad',accent:'#c9b18b',line:'#45474c'},
- {id:'rain',name:'Rain and Cappuccino',bg:'#f7f0e5',surface:'#e5eeed',text:'#3e494b',muted:'#646f6d',accent:'#86563b',line:'#b8c8c5'},
+ {id:'rain',name:'Rain with Cappuccino',bg:'#f7f0e5',surface:'#e5eeed',text:'#3e494b',muted:'#646f6d',accent:'#86563b',line:'#b8c8c5'},
  {id:'haru-hisagi',name:'春泥棒 · 春日樱色',bg:'#f8f4f0',surface:'#f5eae9',text:'#384540',muted:'#65746c',accent:'#9b4d64',line:'#cbd8cc'},
  {id:'blue-hour',name:'蓝调夜色 · Blue Hour',bg:'#192630',surface:'#233540',text:'#e5eceb',muted:'#a8bbc3',accent:'#97c8cf',line:'#405760'}
 ];
