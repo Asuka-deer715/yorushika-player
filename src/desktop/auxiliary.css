@@ -4,3 +4,11 @@
 
 .desktop-lyrics{background:color-mix(in srgb,var(--surface,#233540) 88%,transparent);border-color:var(--line,#405760);color:var(--text,#e5eceb);text-shadow:none}.desktop-lyrics .original{color:var(--accent,#97c8cf);-webkit-text-stroke:0}.desktop-lyrics .translation{color:var(--text,#e5eceb);-webkit-text-stroke:0}.lyric-toolbar button{color:var(--text,#e5eceb);display:grid;place-items:center}.lyric-toolbar svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.lyric-toolbar i{border-color:var(--line,#405760)}.lyric-appearance{background:var(--surface,#233540);border-color:var(--line,#405760);color:var(--text,#e5eceb)}.lyric-appearance [aria-pressed=true]{color:var(--accent,#97c8cf)}
 .desktop-lyrics{background:transparent;border:0;text-shadow:0 1px 3px #000,0 0 7px #000;overflow:hidden}.desktop-lyrics .original,.desktop-lyrics .translation{-webkit-text-stroke:.35px #263238}.desktop-lyrics.vertical{flex-direction:row;gap:12px;padding:38px 20px 12px;align-items:flex-start}.desktop-lyrics.vertical p{writing-mode:vertical-rl;text-orientation:mixed;max-height:calc(100vh - 50px);overflow:auto;overflow-wrap:anywhere}.desktop-lyrics-toggle{width:30px;height:30px;padding:0;border:1px solid var(--muted);border-radius:5px;color:var(--muted);line-height:1}.desktop-lyrics-toggle[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
+.desktop-lyrics .lyric-toolbar{opacity:1;flex-wrap:wrap;right:auto;left:50%;transform:translateX(-50%);width:max-content;max-width:100%;background:var(--surface,#233540);border-radius:8px;padding:2px}
+.desktop-lyrics.vertical{padding-top:76px}
+.desktop-lyrics.vertical p{max-height:calc(100vh - 88px)}
+.desktop-lyrics.vertical .lyric-appearance{top:68px;right:8px;max-width:calc(100% - 16px);flex-wrap:wrap}
+.desktop-lyrics.locked,.desktop-lyrics.locked *{-webkit-app-region:no-drag}
+.desktop-lyrics.locked .lyric-toolbar,.desktop-lyrics.locked .lyric-appearance{display:none}
+.lyric-unlock{position:absolute;top:4px;left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:6px;background:var(--surface,#233540);color:var(--text,#e5eceb);white-space:nowrap}
+.lyric-unlock[hidden]{display:none}

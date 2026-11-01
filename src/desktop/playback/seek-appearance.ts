@@ -1,0 +1,11 @@
+import {t} from '../localization/i18n.js';
+const key='seek-thumb-image';
+export function applySeekAppearance(){const image=localStorage.getItem(key);const seek=document.getElementById('seek');if(!seek)return;seek.classList.toggle('custom-seek-thumb',!!image);if(image)seek.style.setProperty('--seek-thumb-image',`url("${image}")`);else seek.style.removeProperty('--seek-thumb-image');}
+export function mountSeekAppearance(host:HTMLElement){
+ const section=document.createElement('div');section.className='setting';
+ const label=document.createElement('span');label.textContent=t('进度滑块图案');const hint=document.createElement('small');hint.textContent=t('上传图片作为进度滑块，显示为固定大小；图片只保存在本机。');label.append(hint);
+ const actions=document.createElement('div');actions.className='seek-image-actions';const upload=document.createElement('button');upload.className='quiet';upload.textContent=t('选择图片');const reset=document.createElement('button');reset.className='quiet';reset.textContent=t('恢复默认');const status=document.createElement('small');status.setAttribute('role','status');
+ const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/webp';input.hidden=true;upload.onclick=()=>input.click();reset.onclick=()=>{localStorage.removeItem(key);applySeekAppearance();status.textContent=t('已恢复默认');};
+ input.onchange=()=>{const file=input.files?.[0];input.value='';if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>10*1024*1024){status.textContent=t('请选择 10 MB 以内的 PNG、JPEG 或 WebP 图片');return;}const url=URL.createObjectURL(file);const image=new Image();image.onload=()=>{try{const canvas=document.createElement('canvas');canvas.width=canvas.height=96;const ctx=canvas.getContext('2d');if(!ctx)throw Error('无法处理图片');const scale=Math.min(96/image.naturalWidth,96/image.naturalHeight);const w=image.naturalWidth*scale,h=image.naturalHeight*scale;ctx.drawImage(image,(96-w)/2,(96-h)/2,w,h);localStorage.setItem(key,canvas.toDataURL('image/png'));applySeekAppearance();status.textContent=t('图案已保存');}catch{status.textContent=t('图片保存失败，请重试');}finally{URL.revokeObjectURL(url);}};image.onerror=()=>{URL.revokeObjectURL(url);status.textContent=t('图片无法读取');};image.src=url;};
+ actions.append(upload,reset,input,status);section.append(label,actions);host.append(section);
+}

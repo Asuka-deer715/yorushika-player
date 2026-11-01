@@ -1,3 +1,4 @@
+import {createGalleryImage,showGalleryImage} from './gallery-placeholder.js';
 import {t} from '../localization/i18n.js';
 import {mountLocalGallery} from './gallery-local.js';
 import {officialGallery} from './official-gallery.js';
@@ -36,17 +37,17 @@ export async function mountGallery(host:HTMLElement) {
    const item=officialGallery[index];
    const image=card.querySelector('img')!;
    const id='official-gallery-'+index;
-   void window.catalogCoverCache.get(id).then(saved=>saved||window.catalogCoverCache.save(id,item.url)).then(data=>{
+   void window.catalogCoverCache.get(id).then(saved=>saved||window.catalogCoverCache.save(id,item.url)).then(async data=>{
     if(!card.isConnected)return;
-    image.src=data;
+    await showGalleryImage(image,data,item.name);
     card.querySelector('button')!.onclick=()=>{const dialog=document.createElement('dialog');dialog.className='gallery-preview';const large=document.createElement('img');large.src=data;large.alt=item.name;dialog.append(large);dialog.onclick=event=>{if(event.target===dialog)dialog.close();};dialog.onclose=()=>dialog.remove();document.body.append(dialog);dialog.showModal();};
-   }).catch(()=>{image.alt=t('封面加载失败');});
+   }).catch(()=>{image.title=t('封面加载失败');});
   }
  },{rootMargin:'300px'});
  officialGallery.forEach((item,index)=>{
   const card=document.createElement('article');card.className='gallery-card';card.dataset.index=String(index);
   const view=document.createElement('button');view.className='gallery-image-button';view.setAttribute('aria-label',item.name);
-  const image=document.createElement('img');image.alt=item.name;view.append(image);
+  const image=createGalleryImage();view.append(image);
   const footer=document.createElement('div');const name=document.createElement('span');name.textContent=item.name;footer.append(name);
   card.append(view,footer);officialGrid.append(card);officialObserver.observe(card);
  });
@@ -56,18 +57,18 @@ export async function mountGallery(host:HTMLElement) {
    curatedObserver.unobserve(entry.target);
    const card=entry.target as HTMLElement;const item=curatedItems[Number(card.dataset.index)];
    const image=card.querySelector('img')!;
-   void window.catalogCoverCache.get('gallery-'+item.id).then(saved=>saved||window.catalogCoverCache.save('gallery-'+item.id,item.url)).then(data=>{
+   void window.catalogCoverCache.get('gallery-'+item.id).then(saved=>saved||window.catalogCoverCache.save('gallery-'+item.id,item.url)).then(async data=>{
     if(!card.isConnected)return;
-    image.src=data;
+    await showGalleryImage(image,data,item.name);
     card.querySelector<HTMLButtonElement>('.gallery-image-button')!.onclick=()=>{const dialog=document.createElement('dialog');dialog.className='gallery-preview';const large=document.createElement('img');large.src=data;large.alt=item.name;dialog.append(large);dialog.onclick=event=>{if(event.target===dialog)dialog.close();};dialog.onclose=()=>dialog.remove();document.body.append(dialog);dialog.showModal();};
-   }).catch(()=>{image.alt=t('图片加载失败');});
+   }).catch(()=>{image.title=t('图片加载失败');});
   }
  },{rootMargin:'300px'});
  const curatedItems:GalleryCollectionImage[]=[...collaborations,...exhibitions];
  curatedItems.forEach((item,index)=>{
   const card=document.createElement('article');card.className='gallery-card';card.dataset.index=String(index);
   const view=document.createElement('button');view.className='gallery-image-button';view.setAttribute('aria-label',item.name);
-  const image=document.createElement('img');image.alt=item.name;view.append(image);
+  const image=createGalleryImage();view.append(image);
   const name=document.createElement('strong');name.className='gallery-curated-name';name.textContent=item.name;
   const credit=document.createElement('p');credit.className='gallery-credit';credit.textContent=t(item.credit);
   const links=document.createElement('div');links.className='gallery-source-links';

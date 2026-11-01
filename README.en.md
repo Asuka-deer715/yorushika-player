@@ -59,6 +59,9 @@ Video import accepts ordinary files or a Bilibili download cache directory. Bili
 - **Bilibili cache**: select the download directory, then an output directory. Original cache files are retained; large videos need sufficient disk space.
 - **Embedded subtitles**: select a track on the player screen. Image and ASS/SSA subtitles are cached on first preparation; time depends on video duration, resolution and hardware. The original video is not modified. Special ASS fonts may differ if they are not available locally.
 - **Desktop lyrics**: use the lyrics button in the playback bar to show or hide the transparent window; its appearance controls offer horizontal and vertical layouts.
+- **Lyric bookmarks**: save the current lyric in the player; the sidebar cycles through saved lines and opens a management view.
+- **Player appearance**: Settings → Playback offers a custom seek-thumb image, track colors, spectrum and breathing glow. Volume opens in a vertical popup.
+- **Sidebar**: use its menu button to collapse or expand it.
 - **Gallery**: add images under your collection or fan art. Official images require a network connection on first viewing and are cached locally after retrieval.
 - **Data location**: packaged builds default to the current user's application-data directory; development builds use `.runtime/` in the project. Relink files after moving them.
 

@@ -7,5 +7,6 @@ export function mountIntroSettings(host:HTMLElement){
  const enabled=host.querySelector<HTMLInputElement>('#intro-enabled')!;
  enabled.checked=localStorage.getItem('desktop-intro')!=='false';enabled.onchange=()=>localStorage.setItem('desktop-intro',String(enabled.checked));
  const duration=host.querySelector<HTMLSelectElement>('#intro-duration')!;const saved=localStorage.getItem('desktop-intro-seconds');duration.value=saved==='1'||saved==='1.5'||saved==='2'?saved:'1.5';duration.onchange=()=>localStorage.setItem('desktop-intro-seconds',duration.value);enhanceSelect(duration);
- host.querySelector<HTMLButtonElement>('#intro-replay')!.onclick=()=>void playIntro(true);
+ const replay=host.querySelector<HTMLButtonElement>('#intro-replay')!;
+ replay.onclick=async()=>{replay.disabled=true;try{await playIntro(true);}finally{replay.disabled=false;}};
 }

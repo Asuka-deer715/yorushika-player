@@ -25,7 +25,7 @@ app.on('second-instance', () => {
   window.focus();
 });
 app.commandLine.appendSwitch('disk-cache-dir', path.join(dataRoot, 'cache'));
-protocol.registerSchemesAsPrivileged([{ scheme: 'local-media', privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true } }]);
+protocol.registerSchemesAsPrivileged([{ scheme: 'local-media', privileges: { standard: true, secure: true, stream: true, supportFetchAPI: true, corsEnabled: true } }]);
 const { CollectionStore } = require('../../dist/main/collection/collection-store.js');
 const { registerCollectionIpc } = require('../../dist/main/collection/collection-ipc.js');
 const { OnlineSourceStore, registerOnlineSourcesIpc } = require('../../dist/main/online/online-sources-ipc.js');
